@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { navigate } from 'gatsby';
-import { Desktop, Mobile, Tablet } from '../../components/common/Responsive';
+import { API_URL } from '../../../config';
 import Font from '../../styles/Font';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import Color from '../../styles/Color';
@@ -17,6 +17,7 @@ import { CheckBox, CheckBoxField } from '../../components/CheckBox';
 import { DefaultButton } from '../../components/Button';
 import { Title } from '../../components/account/Text';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
+import { JoinRequestDTO, Organization } from '../../types/account/Join';
 
 const InputContainer = styled.div`
   display: flex;
@@ -28,6 +29,7 @@ const InputContainer = styled.div`
 
   @media (max-width: 1024px) {
     width: 100%;
+    max-width: 420px;
     padding: 0 16px;
     box-sizing: border-box;
   }
@@ -74,7 +76,7 @@ const ClearButton = styled.button`
   margin: 0;
 `;
 
-const DivisionModalWrapper = styled.div<{ isDarkMode: boolean }>`
+const OrganizationModalWrapper = styled.div<{ isDarkMode: boolean }>`
   width: 540px;
   display: flex;
   align-items: center;
@@ -89,7 +91,7 @@ const DivisionModalWrapper = styled.div<{ isDarkMode: boolean }>`
   gap: 16px;
 `;
 
-const DivisionModalTableContainer = styled.div<{ isDarkMode: boolean }>`
+const OrganizationModalTableContainer = styled.div<{ isDarkMode: boolean }>`
   margin-bottom: 16px;
   width: 100%;
   display: flex;
@@ -138,30 +140,31 @@ const DivisionModalTableContainer = styled.div<{ isDarkMode: boolean }>`
   }
 `;
 
-const FindDivisionModal = ({
+const FindOrgModal = ({
   isOpened,
   closeModal,
-  applyDivision,
-  divisions,
-  onDivisionCheckboxChange,
+  applyOrganization,
+  organizations,
+  onOrgCheckboxChange,
   checkboxes,
-  selectedDivision,
+  selectedOrg,
+  setCurrentKeyword,
 }: {
   isOpened: boolean;
   closeModal: () => void;
-  applyDivision: () => void;
-  divisions: { name: string; value: string }[];
-  onDivisionCheckboxChange: (idx: number) => React.ChangeEventHandler;
+  applyOrganization: () => void;
+  organizations: Organization[];
+  onOrgCheckboxChange: (idx: number) => React.ChangeEventHandler;
   checkboxes: React.MutableRefObject<HTMLInputElement[]>;
-  selectedDivision: number;
+  selectedOrg: number;
+  setCurrentKeyword: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [keyword, setKeyword] = useState('');
-  const [currentKeyword, setCurrentKeyword] = useState('');
 
   return isOpened ? (
     <ModalContainer>
-      <DivisionModalWrapper isDarkMode={isDarkMode}>
+      <OrganizationModalWrapper isDarkMode={isDarkMode}>
         <div
           style={{
             display: 'flex',
@@ -227,45 +230,43 @@ const FindDivisionModal = ({
           </DefaultButton>
         </div>
         <CheckBoxField size="S">
-          <DivisionModalTableContainer isDarkMode={isDarkMode}>
+          <OrganizationModalTableContainer isDarkMode={isDarkMode}>
             <div>
               <span style={{ ...Font.body.caption }}>기관명</span>
             </div>
             <div>
               <span style={{ ...Font.body.caption }}>선택</span>
             </div>
-            {divisions
-              .filter(({ name }) => name.includes(currentKeyword))
-              .map(({ name, value }, idx) => (
-                <>
-                  <div>
-                    <span style={{ ...Font.body.caption }}>{name}</span>
-                  </div>
-                  <div>
-                    <CheckBox
-                      name={name}
-                      value={value}
-                      label={''}
-                      size={'S'}
-                      onChange={onDivisionCheckboxChange(idx)}
-                      inputRef={(el) => (checkboxes.current[idx] = el)}
-                    />
-                  </div>
-                </>
-              ))}
-          </DivisionModalTableContainer>
+            {organizations.map(({ name, extOrganizationId }, idx) => (
+              <>
+                <div>
+                  <span style={{ ...Font.body.caption }}>{name}</span>
+                </div>
+                <div>
+                  <CheckBox
+                    name={name}
+                    value={extOrganizationId.toString()}
+                    label={''}
+                    size={'S'}
+                    onChange={onOrgCheckboxChange(idx)}
+                    inputRef={(el) => (checkboxes.current[idx] = el)}
+                  />
+                </div>
+              </>
+            ))}
+          </OrganizationModalTableContainer>
         </CheckBoxField>
         <DefaultButton
           style={'PRIMARY'}
-          state={selectedDivision === -1 ? 'DISABLED' : 'DEFAULT'}
+          state={selectedOrg === -1 ? 'DISABLED' : 'DEFAULT'}
           type={'NONE'}
           size={'L'}
           width={'100%'}
-          onClick={applyDivision}
+          onClick={applyOrganization}
         >
           등록하기
         </DefaultButton>
-      </DivisionModalWrapper>
+      </OrganizationModalWrapper>
     </ModalContainer>
   ) : (
     <></>
@@ -298,37 +299,27 @@ const join = () => {
     };
   }, []);
 
-  /* Division Modal 관련 변수 및 함수*/
-  const divisions = useMemo(
-    () => [
-      {
-        name: '가톨릭대학교',
-        value: '가톨릭대학교',
-      },
-      {
-        name: '강서대학교',
-        value: '강서대학교',
-      },
-      {
-        name: '건국대학교',
-        value: '건국대학교',
-      },
-      {
-        name: '경기대학교',
-        value: '경기대학교',
-      },
-      {
-        name: '경희대학교',
-        value: '경희대학교',
-      },
-    ],
-    []
-  );
+  const [currentSearchOrgKeyword, setCurrentSearchOrgKeyword] = useState('');
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(
+        `${API_URL}/api/v1/members/organizations?${
+          currentSearchOrgKeyword === ''
+            ? ''
+            : `search=${currentSearchOrgKeyword}`
+        }`
+      );
+      const data: Organization[] = await res.json();
+      setOrganizations(data);
+    })();
+  }, [currentSearchOrgKeyword]);
+
   const { isDesktop } = useContext(MediaQueryContext);
-  const [divisionModalOpened, setDivisionModalOpened] = useState(false);
-  const [selectedDivision, setSelectedDivision] = useState(-1);
+  const [orgModalOpened, setOrgModalOpened] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState(-1);
   const checkboxes = useRef<HTMLInputElement[]>([]);
-  const onDivisionCheckboxChange = useCallback(
+  const onOrgCheckboxChange = useCallback(
     (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
       checkboxes.current.forEach((el) => {
         if (el !== e.target) {
@@ -337,22 +328,22 @@ const join = () => {
       });
 
       if (!e.target.checked) {
-        setSelectedDivision(-1);
+        setSelectedOrg(-1);
       } else {
-        setSelectedDivision(idx);
+        setSelectedOrg(idx);
       }
     },
-    [selectedDivision, checkboxes.current]
+    [selectedOrg, checkboxes.current]
   );
 
   useEffect(() => {
-    if (selectedDivision < 0 || selectedDivision >= divisions.length) {
-      setDivision('');
+    if (selectedOrg < 0 || selectedOrg >= organizations.length) {
+      setOrganization(-1);
     } else {
-      setDivision(divisions[selectedDivision].value);
+      setOrganization(organizations[selectedOrg].extOrganizationId);
     }
-  }, [selectedDivision]);
-  /* Division Modal 관련 변수 및 함수*/
+  }, [selectedOrg]);
+  /* Org Modal 관련 변수 및 함수*/
 
   /* 회원과입 Form 관련 변수 및 함수*/
   /** 0: 입력값 없음 1: 형식이 올바르지 않음 2: 중복된 이메일 3: 가능한 값 */
@@ -377,7 +368,7 @@ const join = () => {
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [bPhone, setBPhone] = useState<string>('');
-  const [division, setDivision] = useState<string>('');
+  const [organization, setOrganization] = useState<number>(-1);
   const [BRCImage, setBRCImage] = useState<{ file: File; url: string }>();
 
   // 동의여부
@@ -398,7 +389,9 @@ const join = () => {
    */
   const checkDuplicateEmail = useCallback(
     async (email: string): Promise<boolean> => {
-      return true;
+      const res = await fetch(`${API_URL}/api/v1/duplicate?email=${email}`);
+      const { isUnique }: { isUnique: boolean } = await res.json();
+      return !isUnique;
     },
     []
   );
@@ -460,36 +453,32 @@ const join = () => {
   }, [email]);
 
   useEffect(() => {
-    (async function () {
-      if (pw === '') {
-        setPwState(0);
-      } else if (checkValidPW(pw ?? '')) {
-        setPwState(2);
-      } else {
-        setPwState(1);
-      }
+    if (pw === '') {
+      setPwState(0);
+    } else if (checkValidPW(pw ?? '')) {
+      setPwState(2);
+    } else {
+      setPwState(1);
+    }
 
-      if (pwCheck === '') {
-        setPwCheckState(0);
-      } else if (pwCheck === pw) {
-        setPwCheckState(2);
-      } else {
-        setPwCheckState(1);
-      }
-    })();
+    if (pwCheck === '') {
+      setPwCheckState(0);
+    } else if (pwCheck === pw) {
+      setPwCheckState(2);
+    } else {
+      setPwCheckState(1);
+    }
   }, [pw, pwCheck]);
 
   useEffect(() => {
-    (async function () {
-      if (name === '') {
-        setNameState(0);
-      } else if (checkValidName(name)) {
-        setNameState(2);
-      } else {
-        setNameState(1);
-      }
-    })();
-  });
+    if (name === '') {
+      setNameState(0);
+    } else if (checkValidName(name)) {
+      setNameState(2);
+    } else {
+      setNameState(1);
+    }
+  }, [name]);
   // Validation
   const [joinAvailable, setJoinAvailable] = useState<boolean>(false);
 
@@ -502,13 +491,13 @@ const join = () => {
         pwCheckState === 2 &&
         nameState === 2;
       setJoinAvailable(test);
-    } else {
+    } else if (userType === 'ENTERPRISE') {
       const test =
         emailState === 3 &&
         pwState === 2 &&
         pwCheckState === 2 &&
         nameState === 2 &&
-        division !== '' &&
+        organization !== -1 &&
         BRCImage?.file !== undefined;
       setJoinAvailable(test);
     }
@@ -518,36 +507,56 @@ const join = () => {
     pwCheckState,
     nameState,
     phoneState,
-    division,
+    organization,
     BRCImage,
   ]);
 
   const join = useCallback(() => {
-    try {
-      localStorage.setItem('JoinedUser', name);
-      localStorage.setItem('JoinedUserType', userType as string);
-      navigate('/account/join/done');
-    } catch (e) {
-      console.log('error has occured: ' + e);
-      navigate('/');
+    if (userType === 'STANDARD') {
+      const requestBody = {
+        name,
+        email,
+        password: pw,
+        phoneNumber: phone,
+        isAgreedForReceivingMessage: emailConsent,
+        isAgreedForReceivingNewsletter: newsLetterConsent,
+      } as JoinRequestDTO;
+      (async () => {
+        const res = await fetch(`${API_URL}/api/v1/members/member`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+        if (res.status === 200) {
+          localStorage.setItem('JoinedUser', name);
+          localStorage.setItem('JoinedUserType', userType as string);
+          navigate('/account/join/done');
+        } else {
+          alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        }
+      })();
+    } else if (userType === 'ENTERPRISE') {
     }
-  }, [name]);
+  }, [name, email, pw, phone, emailConsent, newsLetterConsent]);
 
   return (
     <>
-      <FindDivisionModal
-        isOpened={divisionModalOpened}
+      <FindOrgModal
+        setCurrentKeyword={setCurrentSearchOrgKeyword}
+        isOpened={orgModalOpened}
         closeModal={() => {
-          setDivisionModalOpened(false);
-          setSelectedDivision(-1);
+          setOrgModalOpened(false);
+          setSelectedOrg(-1);
         }}
-        applyDivision={() => {
-          setDivisionModalOpened(false);
+        applyOrganization={() => {
+          setOrgModalOpened(false);
         }}
-        divisions={divisions}
+        organizations={organizations}
         checkboxes={checkboxes}
-        onDivisionCheckboxChange={onDivisionCheckboxChange}
-        selectedDivision={selectedDivision}
+        onOrgCheckboxChange={onOrgCheckboxChange}
+        selectedOrg={selectedOrg}
       />
       <Title style={{ marginBottom: '36px' }}>회원가입</Title>
       <InputContainer>
@@ -720,13 +729,11 @@ const join = () => {
               >
                 <TextField
                   placeholder={
-                    selectedDivision === -1
-                      ? ''
-                      : divisions[selectedDivision].name
+                    selectedOrg === -1 ? '' : organizations[selectedOrg].name
                   }
                   size="L"
                   state="DISABLED"
-                  width={'320px'}
+                  width={'calc(100% - 100px)'}
                 />
                 <DefaultButton
                   style="PRIMARY"
@@ -736,7 +743,7 @@ const join = () => {
                   width="92px"
                   height="52px"
                   onClick={() => {
-                    setDivisionModalOpened(true);
+                    setOrgModalOpened(true);
                   }}
                 >
                   소속찾기
@@ -837,7 +844,7 @@ const join = () => {
               placeholder={''}
               size="L"
               state="DISABLED"
-              width={'320px'}
+              width={'calc(100% - 100px)'}
             />
             <DefaultButton
               style="PRIMARY"

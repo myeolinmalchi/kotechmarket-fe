@@ -187,7 +187,7 @@ const login = () => {
           style={{
             ...Font.body.body1,
             color: isDarkMode ? '' : Color.light.text.secondary,
-            width: 'min(100%, 420px)',
+            width: '100%',
             textAlign: 'start',
             marginBottom: '8px',
             marginTop: '24px',

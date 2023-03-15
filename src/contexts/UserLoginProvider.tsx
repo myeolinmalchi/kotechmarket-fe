@@ -11,7 +11,7 @@ export const UserLoginContext = React.createContext<UserLoginContextType>(
 );
 
 const UserLoginProvider = ({ children }: React.PropsWithChildren) => {
-  const [userType, setUserType] = useState<0 | 1 | 2>(0);
+  const [userType, setUserType] = useState<0 | 1 | 2>(2);
 
   // 만료시 true, 유효할시 false 반환
   const checkTokenExpired = React.useCallback((token: string) => {

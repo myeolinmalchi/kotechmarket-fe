@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useMediaQuery } from 'react-responsive';
 import { SideNavContext } from '../../contexts/SideNavProvider';
 import GlobalStyle from '../../styles/GlobalStyle';
 import { MobileTopNav, TopNav } from '../TopNav';
 import { SideNav } from '../SideNav';
 import styled from 'styled-components';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
+import { Toast } from '../../components/Toast';
 
 const Container = styled.div`
   display: flex;
@@ -24,6 +24,7 @@ const InnerContainer = styled(Container)`
   padding: 60px 28px;
   width: 100%;
   max-width: 1200px;
+  position: relative;
 `;
 
 const SideNavArea = styled.div``;
@@ -49,18 +50,30 @@ const ContentWrapper = styled.div<{ disabled: boolean; isOpened: boolean }>`
     transition: width 0.2s;
   }
 
-  @media screen and (max-width: 1024px) {
+  @media (max-width: 600px) {
     top: 64px;
     ${SideNavArea} {
       display: ${({ disabled, isOpened }) =>
         disabled ? 'none' : isOpened ? 'block' : 'none'};
       width: ${({ isOpened }) => (isOpened ? '0' : '100vw')};
     }
+    ${OuterContainer} {
+      display: ${({ isOpened }) => (isOpened ? 'none' : 'block')};
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    ${SideNavArea} {
+      display: ${({ disabled, isOpened }) =>
+        disabled ? 'none' : isOpened ? 'block' : 'none'};
+      width: ${({ isOpened }) => (isOpened ? '0' : '240px')};
+    }
     ${InnerContainer} {
       padding: 0;
     }
+
     ${OuterContainer} {
-      display: ${({ isOpened }) => (isOpened ? 'none' : 'block')};
       width: 100%;
     }
   }
@@ -68,13 +81,13 @@ const ContentWrapper = styled.div<{ disabled: boolean; isOpened: boolean }>`
 
 const Layout = ({ children }: PropsWithChildren) => {
   const { isDesktop, isTablet, isMobile } = useContext(MediaQueryContext);
-  const { isOpened, disabled, toggleSideNav } = useContext(SideNavContext);
+  const { isOpened, disabled } = useContext(SideNavContext);
   const [isLoaded, setIsLoaded] = useState(false);
   React.useEffect(() => {
     setIsLoaded(true);
   }, []);
   return (
-    <div>
+    <div className="flex-gap-polyfill">
       <Helmet>
         <link
           href="//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css"
@@ -84,7 +97,7 @@ const Layout = ({ children }: PropsWithChildren) => {
       </Helmet>
       <GlobalStyle />
       {isLoaded && (
-        <>
+        <div>
           {isDesktop && <TopNav isWritingPage={false} />}
           {(isMobile || isTablet) && <MobileTopNav />}
           <ContentWrapper isOpened={isOpened} disabled={disabled}>
@@ -92,10 +105,13 @@ const Layout = ({ children }: PropsWithChildren) => {
               <SideNav />
             </SideNavArea>
             <OuterContainer>
-              <InnerContainer>{children}</InnerContainer>
+              <InnerContainer>
+                <Toast />
+                {children}
+              </InnerContainer>
             </OuterContainer>
           </ContentWrapper>
-        </>
+        </div>
       )}
     </div>
   );

@@ -43,6 +43,11 @@ const Container = styled.div<{
 
   @media (max-width: 1024px) {
     width: ${({ disabled, isOpened }) =>
+      disabled ? '' : isOpened ? '240px' : '0'};
+  }
+
+  @media (max-width: 600x) {
+    width: ${({ disabled, isOpened }) =>
       disabled ? '' : isOpened ? '100vw' : '0'};
     border: none;
   }
@@ -189,7 +194,7 @@ export const SideNav = () => {
   const { isOpened, disabled, setDisabled, setIsOpened } =
     useContext(SideNavContext);
   const { userType } = useContext(UserLoginContext);
-  const { isDesktop } = useContext(MediaQueryContext);
+  const { isDesktop, isMobile, isTablet } = useContext(MediaQueryContext);
   const [myPageOpened, setMyPageOpened] = useState(false);
   const [channelOpened, setChannelOpened] = useState(false);
   const [contentsOpened, setContentsOpened] = useState(false);

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { Mobile, Desktop } from '../../components/common/Responsive';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import Color from '../../styles/Color';
 import Font from '../../styles/Font';

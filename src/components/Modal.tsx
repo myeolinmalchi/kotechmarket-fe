@@ -20,6 +20,7 @@ interface ModalProps {
   secondaryButtonType?: boolean;
   closeModal?: () => void;
   visible: boolean;
+  reverseButtonOrder?: boolean;
 }
 
 const ModalContainer = styled.div<{ visible: boolean }>`
@@ -29,7 +30,7 @@ const ModalContainer = styled.div<{ visible: boolean }>`
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1000000;
+  z-index: 1000000000;
   width: 100vw;
   height: 100vh;
   background: rgb(0, 0, 0, 0.4);
@@ -104,6 +105,7 @@ const Modal: React.FC<ModalProps> = ({
   onSecondaryButtonClick,
   closeModal,
   visible,
+  reverseButtonOrder,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const modalContainerRef = useRef<HTMLDivElement>(null);
@@ -159,17 +161,19 @@ const Modal: React.FC<ModalProps> = ({
           )}
           {buttonType === 2 && (
             <>
-              <DefaultButton
-                size={'M'}
-                onClick={onPrimaryButtonClick}
-                text={primaryButtonLabel}
-                style={'PRIMARY'}
-                state={'DEFAULT'}
-                type={'NONE'}
-                width={
-                  buttonDirection === 'vertical' ? '100%' : 'calc(100% - 4px)'
-                }
-              />
+              {!reverseButtonOrder && (
+                <DefaultButton
+                  size={'M'}
+                  onClick={onPrimaryButtonClick}
+                  text={primaryButtonLabel}
+                  style={'PRIMARY'}
+                  state={'DEFAULT'}
+                  type={'NONE'}
+                  width={
+                    buttonDirection === 'vertical' ? '100%' : 'calc(100% - 4px)'
+                  }
+                />
+              )}
               {secondaryButtonType ? (
                 <DefaultButton
                   size={'M'}
@@ -189,6 +193,19 @@ const Modal: React.FC<ModalProps> = ({
                   onClick={onSecondaryButtonClick}
                   text={secondaryButtonLabel ?? ''}
                   style={'SECONDARY'}
+                  state={'DEFAULT'}
+                  type={'NONE'}
+                  width={
+                    buttonDirection === 'vertical' ? '100%' : 'calc(100% - 4px)'
+                  }
+                />
+              )}
+              {reverseButtonOrder && (
+                <DefaultButton
+                  size={'M'}
+                  onClick={onPrimaryButtonClick}
+                  text={primaryButtonLabel}
+                  style={'PRIMARY'}
                   state={'DEFAULT'}
                   type={'NONE'}
                   width={

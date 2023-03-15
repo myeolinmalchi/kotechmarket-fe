@@ -18,6 +18,8 @@ const ChooseContainer = styled.div`
 
   @media (max-width: 1024px) {
     flex-direction: column;
+    width: 100%;
+    max-width: 420px;
   }
 `;
 
@@ -37,6 +39,7 @@ const ChooseItem = styled.div<{ selected: boolean; isDarkMode: boolean }>`
   padding: 24px 0;
   cursor: pointer;
   box-sizing: border-box;
+
   @media (max-width: 1024px) {
     width: 100%;
   }
@@ -397,24 +400,9 @@ const choose = () => {
             </svg>
           )}
         </ChooseItem>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '331px',
-            border: `2px solid ${
-              userType === 'ENTERPRISE'
-                ? Color.light.stroke.blue1
-                : isDarkMode
-                ? ''
-                : Color.light.stroke.gray1
-            }`,
-            padding: '24px 20px',
-            cursor: 'pointer',
-            boxSizing: 'border-box',
-          }}
+        <ChooseItem
+          isDarkMode={isDarkMode}
+          selected={userType === 'ENTERPRISE'}
           onClick={() => {
             setUserType('ENTERPRISE');
           }}
@@ -426,6 +414,8 @@ const choose = () => {
               color: isDarkMode ? '' : Color.light.text.primary,
               textAlign: 'start',
               marginBottom: '16px',
+              padding: '0 20px',
+              boxSizing: 'border-box',
             }}
           >
             기관회원
@@ -436,10 +426,12 @@ const choose = () => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'start',
               gap: '8px',
               height: isDesktop ? '120px' : 'fit-content',
-              marginBottom: isDesktop ? '20px' : '',
+              marginBottom: isDesktop ? '24px' : '',
+              padding: '0 20px',
+              boxSizing: 'border-box',
             }}
           >
             <ChooseItemDetail>콘텐츠 업로드 이용가능</ChooseItemDetail>
@@ -875,14 +867,14 @@ const choose = () => {
               />
             </svg>
           )}
-        </div>
+        </ChooseItem>
       </ChooseContainer>
       <DefaultButton
         type="NONE"
         size="L"
         style="PRIMARY"
         state={userType ? 'DEFAULT' : 'DISABLED'}
-        width={'min(100%, 420px)'}
+        width={'min(420px, 100%)'}
         onClick={() => {
           try {
             localStorage.setItem('JoinUserType', userType ?? 'STANDARD');

@@ -14,9 +14,9 @@ import {
 import ImageCarousel from '../components/index/ImageCarousel';
 import ChannelCarousel from '../components/index/ChannelCarousel';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
-import { useMediaQuery } from 'react-responsive';
 import { navigate } from 'gatsby';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
+import { ToastContext } from '../contexts/ToastProvider';
 
 const TagContainer = styled.div<{ isDarkMode: boolean }>`
   border-radius: 4px;
@@ -53,9 +53,14 @@ const TagContainer = styled.div<{ isDarkMode: boolean }>`
 
   @media (max-width: 1024px) {
     box-sizing: border-box;
+    margin: 28px 28px 0 28px;
+    width: calc(100% - 56px);
+  }
+
+  @media (max-width: 600px) {
+    height: 48px;
     margin: 28px 16px 0 16px;
     width: calc(100% - 32px);
-    height: 48px;
     padding: 0 8px;
   }
 `;
@@ -87,6 +92,10 @@ const CardSection = styled.div<{ isDarkMode: boolean }>`
 
   @media (max-width: 1024px) {
     box-sizing: border-box;
+    padding: 30px 28px;
+  }
+
+  @media (max-width: 600px) {
     padding: 30px 16px;
   }
 `;
@@ -100,8 +109,34 @@ const CardContainer = styled.div`
   flex-wrap: wrap;
   gap: 20px;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 600px) {
     gap: 16px;
+  }
+`;
+
+const SubCardContainer = styled.div`
+  width: 100%;
+  padding-left: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  gap: 16px;
+  box-sizing: border-box;
+  margin-bottom: 90px;
+  padding-bottom: 20px;
+
+  ::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${Color.light.stroke.gray1};
+  }
+
+  @media (max-width: 600px) {
+    padding-left: 16px;
   }
 `;
 
@@ -109,8 +144,9 @@ const index = () => {
   const { isDarkMode } = React.useContext(DarkModeContext);
   const tagContainer = useHorizontalScroll();
   const { isDesktop, isTablet, isMobile } = React.useContext(MediaQueryContext);
+  const { alertToast } = React.useContext(ToastContext);
   React.useEffect(() => {
-    console.log(isDesktop);
+    alertToast(2, '전화번호 정보 변경이 완료되었습니다.');
   }, []);
   return (
     <>
@@ -160,11 +196,17 @@ const index = () => {
           </svg>
         </span>
         <CardContainer>
-          {new Array(isDesktop ? 12 : 8).fill(0).map(() => (
+          {new Array(isDesktop ? 12 : isTablet ? 9 : 8).fill(0).map(() => (
             <ContentCard
               src={'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg'}
               marked={false}
-              width={isDesktop ? 'calc(25% - 15px)' : 'calc(50% - 8px)'}
+              width={
+                isDesktop
+                  ? 'calc(25% - 15px)'
+                  : isTablet
+                  ? 'calc(33.3% - 13.3px)'
+                  : 'calc(50% - 8px)'
+              }
               tags={[
                 '저는 태그입니다.',
                 '저는 태그입니다.',
@@ -209,13 +251,19 @@ const index = () => {
           </svg>
         </span>
         <CardContainer>
-          {new Array(4).fill(0).map(() => (
+          {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <EventCard
               src={
                 'https://image.ytn.co.kr/osen/2022/03/5e7737ec-4424-493a-8a60-4a13dda16f18.jpg'
               }
               marked={false}
-              width={isDesktop ? 'calc(25% - 15px)' : 'calc(50% - 8px)'}
+              width={
+                isDesktop
+                  ? 'calc(25% - 15px)'
+                  : isTablet
+                  ? 'calc(33.3% - 13.3px)'
+                  : 'calc(50% - 8px)'
+              }
               title={'안녕하세요 저는 행사카드입니다.'}
               date={new Date()}
               isMobile={!isDesktop}
@@ -257,14 +305,20 @@ const index = () => {
           </svg>
         </span>
         <CardContainer>
-          {new Array(8).fill(0).map(() => (
+          {new Array(isTablet ? 9 : 8).fill(0).map(() => (
             <SpCard
               isProceeding={true}
               src={
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7BBH-t4nt2AKo-TEEfoGzJGx08laOgwYSiQ&usqp=CAU'
               }
               marked={false}
-              width={isDesktop ? 'calc(25% - 15px)' : 'calc(50% - 8px)'}
+              width={
+                isDesktop
+                  ? 'calc(25% - 15px)'
+                  : isTablet
+                  ? 'calc(33.3% - 13.3px)'
+                  : 'calc(50% - 8px)'
+              }
               category={'카테고리'}
               title={'안녕하세요 저는 지원사업 카드입니다.'}
               dday={500}
@@ -297,13 +351,19 @@ const index = () => {
           </svg>
         </span>
         <CardContainer>
-          {new Array(4).fill(0).map(() => (
+          {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <NewsCard
               src={
                 'http://img.segye.com/content/image/2020/08/07/20200807507499.jpg'
               }
               marked={false}
-              width={isDesktop ? 'calc(25% - 15px)' : 'calc(50% - 8px)'}
+              width={
+                isDesktop
+                  ? 'calc(25% - 15px)'
+                  : isTablet
+                  ? 'calc(33.3% - 13.3px)'
+                  : 'calc(50% - 8px)'
+              }
               title={'안녕하세요 저는 기술소식카드입니다.'}
               summary={
                 '국가는 과학기술의 혁신과 정보 및 인력의 개발을 통하여 국민경제의 발전에 노력하여야 한다. 재산권의 행사는 공공복리에 적합하도록 하여야 한다. 법관은 탄핵 또는 금고 이상의 형의 선고에 의하지 아니하고는 파면되지 아니하며, 징계처분에 의하지 아니하고는 정직·감봉 기타 불리한 처분을 받지 아니한다.'
@@ -322,13 +382,16 @@ const index = () => {
         <span
           style={{
             ...(isDesktop ? Font.title.display1 : Font.title.headline),
-            padding: isDesktop ? '' : '0 16px',
+            padding: isDesktop ? '' : isTablet ? '0 28px' : '0 16px',
           }}
         >
           추천 채널
         </span>
         <span
-          style={{ ...Font.body.body2, padding: isDesktop ? '' : '0 16px' }}
+          style={{
+            ...Font.body.body2,
+            padding: isDesktop ? '' : isTablet ? '0 28px' : '0 16px',
+          }}
         >
           전체 채널 보러가기
           <svg
@@ -347,32 +410,19 @@ const index = () => {
           </svg>
         </span>
         {!isDesktop && (
-          <div
-            style={{
-              width: '100%',
-              paddingLeft: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'start',
-              flexWrap: 'nowrap',
-              overflowX: 'scroll',
-              gap: '16px',
-              boxSizing: 'border-box',
-              marginBottom: '90px',
-            }}
-          >
-            {new Array(12).fill(0).map((value, idx) => (
+          <SubCardContainer>
+            {new Array(12).fill(0).map((_, idx) => (
               <SubscribeCard
                 summary={'한줄소개'}
                 src={'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg'}
+                minWidth={'max(150px, calc(25% - 8px))'}
                 width={'calc(40% - 8px)'}
                 title={`업체 이름${idx}`}
                 isMobile={!isDesktop}
                 subscribed={false}
-                minWidth={'calc(40% - 8px)'}
               />
             ))}
-          </div>
+          </SubCardContainer>
         )}
       </CardSection>
       {isDesktop && (
