@@ -1,5 +1,6 @@
 import React from 'react';
 import { useContext, useMemo, useRef } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import styled from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { useMouseInteraction } from '../hooks/useMouseInteraction';
@@ -24,19 +25,22 @@ const PaginationUnit = ({
   const button = useRef(null);
   const { isHovered } = useMouseInteraction(button);
   const { isDarkMode } = useContext(DarkModeContext);
+  const isSmallDevice = useMediaQuery({
+    maxWidth: 380,
+  });
 
   const style: React.CSSProperties = useMemo(
     () => ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: '38px',
-      height: '38px',
+      width: isSmallDevice ? '25px' : '38px',
+      height: isSmallDevice ? '25px' : '38px',
       border: 'none',
       borderRadius: '40px',
       cursor: 'pointer',
       transition: 'background 0.2s',
-      ...Font.body.body1,
+      ...(isSmallDevice ? Font.body.caption : Font.body.body1),
       ...(() => {
         if (isDarkMode) {
         } else {
@@ -67,7 +71,7 @@ const PaginationUnit = ({
         }
       })(),
     }),
-    [isHovered, state]
+    [isHovered, state, isSmallDevice]
   );
 
   const arrow = useMemo(() => {
@@ -147,9 +151,9 @@ type PaginationProps = {
   mode: PaginationMode;
   maxPage?: number;
   currentPage: number;
-  handleNextSection: () => void;
-  handlePrevSection: () => void;
-  handlePage: (page: number) => () => void;
+  handleNextSection?: () => void;
+  handlePrevSection?: () => void;
+  handlePage?: (page: number) => () => void;
 };
 export const Pagination = ({
   start,
@@ -184,7 +188,7 @@ export const Pagination = ({
       <PageWrapper>
         {new Array(end - start + 1).fill(0).map((_, idx) => (
           <PaginationUnit
-            onClick={handlePage(idx + 1)}
+            onClick={handlePage?.(idx + 1)}
             unitType={'NUMBER'}
             state={currentPage === idx + 1 ? 'ACTIVE' : 'DEFAULT'}
             num={idx + 1}

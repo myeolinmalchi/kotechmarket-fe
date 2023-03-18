@@ -69,14 +69,12 @@ export const SearchContainer2 = styled.div<{ isDarkMode: boolean }>`
   flex-wrap: wrap;
 
   @media (max-width: 1024px) {
-    margin: 0 28px;
-    width: calc(100% - 32px);
-    margin-bottom: 28px;
     background: none;
     border: none;
     padding: 0;
+    width: calc(100% - 56px);
   }
-  @media (max-width: 1024px) {
-    margin: 0 16px;
+  @media (max-width: 600px) {
+    width: calc(100% - 32px);
   }
 `;

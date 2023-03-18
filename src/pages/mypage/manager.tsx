@@ -3,11 +3,14 @@ import styled, { css } from 'styled-components';
 import Avatar from '../../components/Avatar';
 import { DefaultButton } from '../../components/Button';
 import { DropDown } from '../../components/DropDown';
+import { Pagination } from '../../components/Pagination';
 import { SearchContainer2, Title } from '../../components/Search';
 import { TextField } from '../../components/TextFields';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
 import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { useCustomNavigate } from '../../hooks/useCustomNavigate';
+import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
 import Color from '../../styles/Color';
 import Font from '../../styles/Font';
 
@@ -16,8 +19,21 @@ const TableWrapper = styled.div`
   width: 100%;
 
   @media (max-width: 1024px) {
-    padding: 0 16px;
+    width: calc(100% - 56px);
     box-sizing: border-box;
+  }
+
+  @media (max-width: 600px) {
+    width: calc(100% - 32px);
+  }
+
+  ::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${Color.light.background.gray2};
+    border-radius: 5px;
   }
 `;
 
@@ -44,6 +60,20 @@ const FlexWrapper = styled.div<{ gap?: string }>`
   width: 100%;
   height: 100%;
   gap: ${({ gap }) => gap ?? '8px'};
+`;
+
+const AddButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  width: 100%;
+  box-sizing: border-box;
+  @media (max-width: 1024px) {
+    padding: 0 28px;
+  }
+  @media (max-width: 600) {
+    padding: 0 16px;
+  }
 `;
 
 const Table = styled.table<{ isDarkMode: boolean }>`
@@ -93,6 +123,9 @@ const manager = () => {
 
   const [stateOpened, setStateOpened] = useState(false);
   const [selectedState, setSelectedState] = useState(-1);
+
+  const navigate = useCustomNavigate();
+  const tableRef = useHorizontalScroll();
   return (
     <>
       <Title>담당자 관리</Title>
@@ -198,7 +231,7 @@ const manager = () => {
           width={'69px'}
         />
       </SearchContainer2>
-      <TableWrapper>
+      <TableWrapper style={{ marginBottom: '32px' }} ref={tableRef}>
         <Table isDarkMode={isDarkMode}>
           <colgroup>
             <ColumnWidth width="17%" />
@@ -333,6 +366,40 @@ const manager = () => {
           </tbody>
         </Table>
       </TableWrapper>
+      <AddButtonWrapper>
+        <DefaultButton
+          style={'PRIMARY'}
+          state={'DEFAULT'}
+          type={'NONE'}
+          size={'S'}
+          onClick={() => {
+            navigate('/mypage/manager/edit');
+          }}
+        >
+          추가하기
+        </DefaultButton>
+      </AddButtonWrapper>
+      <div
+        style={{
+          marginTop: '60px',
+        }}
+      ></div>
+      <Pagination
+        {...(isDesktop
+          ? {
+              start: 1,
+              end: 10,
+              currentPage: 1,
+              mode: 'NORMAL',
+            }
+          : {
+              start: 1,
+              end: 5,
+              currentPage: 1,
+              mode: 'NORMAL',
+            })}
+      />
+      <div style={{ marginBottom: isDesktop ? '60px' : '120px' }}></div>
     </>
   );
 };
