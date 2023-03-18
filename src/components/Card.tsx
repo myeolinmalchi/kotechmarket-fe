@@ -1,17 +1,25 @@
-import { navigate } from 'gatsby';
 import * as React from 'react';
 import { useContext } from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
+import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 import Color from '../styles/Color';
 import Font from '../styles/Font';
 import Avatar from './Avatar';
 import { DefaultButton } from './Button';
 import { Tag } from './Tag';
-
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
 const ImageArea = styled.div<{
   src?: string;
+  loaded?: boolean;
   isDarkMode: boolean;
 }>`
   background-image: url(${({ src }) => src});
@@ -26,6 +34,14 @@ const ImageArea = styled.div<{
     ${({ isDarkMode }) => (isDarkMode ? '' : Color.light.stroke.gray1)};
   border-radius: 4px;
   position: relative;
+
+  opacity: ${({ loaded }) => (loaded ? 1 : 0)};
+  animation: ${({ loaded }) =>
+    loaded
+      ? css`
+          ${fadeIn} 0.3s ease-in-out forwards
+        `
+      : 'none'};
 `;
 
 const ImageMarkIconArea = styled.div<{ isDarkMode: boolean }>`
@@ -149,10 +165,21 @@ const ImageBox = ({
   marked: boolean;
   onClick?: () => void;
 }) => {
+  const navigate = useCustomNavigate();
   const { isDarkMode } = useContext(DarkModeContext);
   const imgRef = React.useRef<HTMLDivElement>(null);
   const observerRef = React.useRef<IntersectionObserver>();
   const [onPage, setOnPage] = React.useState(false);
+  const [loaded, setLoaded] = React.useState(false);
+
+  const loadImage = (src: string) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(true);
+      img.onerror = () => reject(false);
+    });
+  };
 
   const onIntersection = (
     entries: IntersectionObserverEntry[],
@@ -161,6 +188,11 @@ const ImageBox = ({
     entries.forEach((e) => {
       if (e.isIntersecting) {
         io.unobserve(e.target);
+        if (src) {
+          loadImage(src)
+            .then(() => setLoaded(true))
+            .catch(() => setLoaded(false));
+        }
         setOnPage(true);
       }
     });
@@ -175,6 +207,7 @@ const ImageBox = ({
 
   return (
     <ImageArea
+      loaded={loaded}
       ref={imgRef}
       src={
         onPage
@@ -364,6 +397,7 @@ export const ContentCard = ({
   isMobile: boolean;
 }) => {
   const tagContainer = useHorizontalScroll();
+  const navigate = useCustomNavigate();
 
   return (
     <CardContainer width={width} isMobile={isMobile}>
@@ -404,6 +438,7 @@ export const NewsCard = ({
   category?: string;
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const navigate = useCustomNavigate();
   return (
     <CardContainer width={width} isMobile={isMobile}>
       <ImageBox src={src} marked={marked} />
@@ -519,6 +554,7 @@ export const SpCard = ({
   isProceeding: boolean;
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const navigate = useCustomNavigate();
   return (
     <CardContainer width={width} isMobile={isMobile}>
       <ImageBox

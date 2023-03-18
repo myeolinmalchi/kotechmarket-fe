@@ -3,11 +3,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import Font from '../../../styles/Font';
 import Color from '../../../styles/Color';
 import { DarkModeContext } from '../../../contexts/DarkModeProvider';
-import { navigate } from 'gatsby';
 import { DefaultButton } from '../../../components/Button';
 import { MediaQueryContext } from '../../../contexts/MediaQueryProvider';
+import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
 
 const done = () => {
+  const navigate = useCustomNavigate();
   const { isDarkMode } = useContext(DarkModeContext);
   const { isDesktop } = useContext(MediaQueryContext);
   const [joinedUser, setJoinedUser] = useState('');
@@ -259,4 +261,4 @@ const done = () => {
   );
 };
 
-export default done;
+export default withPageLoadedEffect(done);

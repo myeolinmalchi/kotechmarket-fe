@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { navigate } from 'gatsby';
+import React, { useContext, useEffect, useState } from 'react';
 import { DefaultButton, TextButton } from '../../components/Button';
 import { TextField } from '../../components/TextFields';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import Font from '../../styles/Font';
 import Color from '../../styles/Color';
-import Modal from '../../components/Modal';
 import { Container } from '../../components/account/Container';
-import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
 import { Title } from '../../components/account/Text';
+import { useCustomNavigate } from '../../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { ModalContext } from '../../contexts/ModalPrivider';
 
 const login = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -17,35 +17,37 @@ const login = () => {
   const [email, setEmail] = useState('');
   const [pw, setPW] = useState('');
 
+  const { openModal, closeModal } = useContext(ModalContext);
+
+  const openPendingUserModal = React.useCallback(() => {
+    openModal({
+      title: (
+        <>
+          안녕하세요{' '}
+          <span style={{ color: Color.light.text.blue }}>닉네임</span>님!
+        </>
+      ),
+      content: [
+        '회원가입 승인을 대기중입니다.',
+        '승인이 완료되면 안내 메일이 발송됩니다.',
+      ],
+      buttonType: 1,
+      primaryButtonLabel: '홈으로 이동하기',
+      onPrimaryButtonClick: () => {
+        navigate('/');
+        closeModal();
+      },
+    });
+  }, []);
+
   useEffect(() => {
     setButtonDisabled(email === '' || pw === '');
   }, [email, pw]);
 
-  // 승인 대기중인 기관 아이디의 경우
-  const [pendingUserModalOpened, setPendingUserModalOpened] = useState(false);
-
-  const { isDesktop } = useContext(MediaQueryContext);
+  const navigate = useCustomNavigate();
 
   return (
     <>
-      <Modal
-        visible={pendingUserModalOpened}
-        title={
-          <>
-            안녕하세요{' '}
-            <span style={{ color: Color.light.text.blue }}>닉네임</span>님!
-          </>
-        }
-        content={[
-          '회원가입 승인을 대기중입니다.',
-          '승인이 완료되면 안내 메일이 발송됩니다.',
-        ]}
-        buttonType={1}
-        primaryButtonLabel={'홈으로 이동하기'}
-        onPrimaryButtonClick={() => {
-          navigate('/');
-        }}
-      />
       <Container>
         <Title style={{ marginBottom: '40px' }}>환영합니다</Title>
         <div
@@ -283,4 +285,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default withPageLoadedEffect(login);

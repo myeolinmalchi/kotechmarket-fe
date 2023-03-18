@@ -6,6 +6,7 @@ import Color from '../styles/Color';
 import styled from 'styled-components';
 import { DefaultButton } from '../components/Button';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../hocs/withPageLoadedEffect';
 
 const ItemContainer = styled.div`
     display: flex;
@@ -1220,4 +1221,5 @@ const sctown = () => {
     );
 };
 
-export default sctown;
+
+export default withPageLoadedEffect(sctown);

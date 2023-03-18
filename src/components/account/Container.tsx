@@ -14,8 +14,11 @@ export const Container = styled.div`
     width: 100%;
     max-width: 420px;
     padding: 0 16px;
-    box-sizing: border-box;
     margin-bottom: 120px;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 600px) {
   }
 `;
 
@@ -47,8 +50,8 @@ export const InputContainer = styled.div<{
   @media (max-width: 1024px) {
     width: 100%;
     padding: ${(props) => props.padding ?? '0 16px'};
-    box-sizing: border-box;
     max-width: ${(props) => props.maxWidth ?? '420px'};
+    box-sizing: border-box;
   }
 `;
 

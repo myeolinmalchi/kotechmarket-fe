@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Desktop, Mobile, Tablet } from '../../components/common/Responsive';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import Color from '../../styles/Color';
 import React, { useContext, useState, useEffect } from 'react';
@@ -8,8 +7,8 @@ import { TextButton, DefaultButton } from '../../components/Button';
 import { Tag } from '../../components/Tag';
 import Modal from '../../components/Modal';
 import useQueryString from '../../hooks/useQueryString';
-import { useMediaQuery } from 'react-responsive';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
 
 const RowContainer = styled.div`
   width: 100%;
@@ -1096,4 +1095,4 @@ const detail = () => {
   );
 };
 
-export default detail;
+export default withPageLoadedEffect(detail);

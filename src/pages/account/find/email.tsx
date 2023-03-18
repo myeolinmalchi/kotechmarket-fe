@@ -1,8 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { navigate } from 'gatsby';
-import styled from 'styled-components';
 import { DefaultButton } from '../../../components/Button';
-import { Desktop, Mobile, Tablet } from '../../../components/common/Responsive';
 import { TextField } from '../../../components/TextFields';
 import { DarkModeContext } from '../../../contexts/DarkModeProvider';
 import Color from '../../../styles/Color';
@@ -13,6 +10,8 @@ import {
   InputContainer,
   InputWrapper,
 } from '../../../components/account/Container';
+import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
 
 const email = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -20,6 +19,7 @@ const email = () => {
   const [currentStep, setCurrentStep] = useState<0 | 1>(0);
   const [email, setEmail] = useState('example1234@gmail.com');
   const [regDate, setRegDate] = useState(new Date());
+  const navigate = useCustomNavigate();
   return (
     <>
       <Title>이메일 찾기</Title>
@@ -104,4 +104,4 @@ const email = () => {
   );
 };
 
-export default email;
+export default withPageLoadedEffect(email);

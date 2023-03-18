@@ -9,7 +9,7 @@ import { ToggleButton, DefaultButton } from './Button';
 import Avatar from './Avatar';
 import { SideNavContext } from '../contexts/SideNavProvider';
 import { UserLoginContext } from '../contexts/UserLoginProvider';
-import { navigate } from 'gatsby';
+import { useCustomNavigate } from '../hooks/useCustomNavigate';
 
 const Container = styled.nav<{ isDarkMode: boolean }>`
   position: fixed;
@@ -102,6 +102,7 @@ export const TopNav = ({ isWritingPage }: TopNavProps) => {
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
   const { toggleSideNav, disabled } = useContext(SideNavContext);
   const { userType } = useContext(UserLoginContext);
+  const navigate = useCustomNavigate();
   return (
     <Container isDarkMode={isDarkMode}>
       <Section>
@@ -282,6 +283,7 @@ export const MobileTopNav = () => {
   const toggleSearchBar = () => {
     setSearchBarOpened(!searchBarOpened);
   };
+  const navigate = useCustomNavigate();
   return (
     <Container isDarkMode={isDarkMode}>
       {searchBarOpened && (

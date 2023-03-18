@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { navigate } from 'gatsby';
 import { API_URL } from '../../../config';
 import Font from '../../styles/Font';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
@@ -18,6 +17,8 @@ import { DefaultButton } from '../../components/Button';
 import { Title } from '../../components/account/Text';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
 import { JoinRequestDTO, Organization } from '../../types/account/Join';
+import { useCustomNavigate } from '../../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
 
 const InputContainer = styled.div`
   display: flex;
@@ -30,8 +31,8 @@ const InputContainer = styled.div`
   @media (max-width: 1024px) {
     width: 100%;
     max-width: 420px;
-    padding: 0 16px;
     box-sizing: border-box;
+    padding: 0 16px;
   }
 `;
 
@@ -281,6 +282,8 @@ const join = () => {
   >(undefined);
 
   const [emailTimer, setEmailTimer] = useState<NodeJS.Timer | null>(null);
+
+  const navigate = useCustomNavigate();
 
   useEffect(() => {
     try {
@@ -924,7 +927,7 @@ const join = () => {
         type={'NONE'}
         state={joinAvailable ? 'DEFAULT' : 'DISABLED'}
         size={'L'}
-        width="min(calc(100% - 32px), 420px)"
+        width={isDesktop ? 'min(calc(100% - 32px), 420px)' : '388px'}
         onClick={() => {
           join();
         }}
@@ -960,4 +963,4 @@ const join = () => {
   );
 };
 
-export default join;
+export default withPageLoadedEffect(join);

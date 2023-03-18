@@ -20,6 +20,8 @@ const Container = styled.div<{ size: Size; isDarkMode: boolean; src?: string }>`
         return 'width: 48px; height: 48px; border-radius: 48px;';
       case 'M':
         return 'width: 34px; height: 34px; border-radius: 34px;';
+      case 'M2':
+        return 'width: 28px; height: 28px; border-radius: 28px;';
       case 'S':
         return 'width: 22px; height: 22px; border-radius: 22px;';
     }
@@ -81,6 +83,12 @@ const Avatar = ({ size, src }: AvatarProps) => {
 <rect x="0.323529" y="0.323529" width="21.3529" height="21.3529" rx="10.6765" stroke="#EEEEEE" stroke-width="0.647059"/>
 </svg>
         `,
+      M2: `<svg width="28" height="28" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.323529" y="0.323529" width="21.3529" height="21.3529" rx="10.6765" fill="#F5F6F7"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M7.99998 7C7.99998 5.34315 9.34312 4 11 4C12.6568 4 14 5.34315 14 7C14 8.65685 12.6568 10 11 10C9.34312 10 7.99998 8.65685 7.99998 7Z" fill="#A3A7AE"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5.50081 16.4036C5.55237 13.4104 7.99463 11 11 11C14.0054 11 16.4477 13.4105 16.4992 16.4038C16.5026 16.6023 16.3882 16.784 16.2077 16.8668C14.6218 17.5945 12.8577 18 11.0002 18C9.14255 18 7.37827 17.5945 5.79219 16.8666C5.61174 16.7838 5.49739 16.6021 5.50081 16.4036Z" fill="#A3A7AE"/>
+<rect x="0.323529" y="0.323529" width="21.3529" height="21.3529" rx="10.6765" stroke="#EEEEEE" stroke-width="0.647059"/>
+</svg>`,
     }),
     []
   );

@@ -1,8 +1,6 @@
-import { navigate } from '@reach/router';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import styled, { css } from 'styled-components';
 import {
-  FreeContainer,
   InputContainer,
   InputWrapper,
 } from '../../components/account/Container';
@@ -11,7 +9,11 @@ import { CheckBox, CheckBoxField } from '../../components/CheckBox';
 import Modal from '../../components/Modal';
 import { TextField } from '../../components/TextFields';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
+import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
+import ModalProvider, { ModalContext } from '../../contexts/ModalPrivider';
 import { ToastContext } from '../../contexts/ToastProvider';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { useCustomNavigate } from '../../hooks/useCustomNavigate';
 import Color from '../../styles/Color';
 import Font from '../../styles/Font';
 
@@ -42,6 +44,10 @@ const ImageContainer = styled.div<{ src?: string }>`
       background-position: center;
       background-size: cover;
     `}
+
+  @media(max-width: 600px) {
+    margin-bottom: 36px;
+  }
 `;
 
 const InfoContainer = styled.div<{ isDarkMode: boolean }>`
@@ -89,12 +95,61 @@ const InfoContainer = styled.div<{ isDarkMode: boolean }>`
     border: 1px solid
       ${(props) => (props.isDarkMode ? '' : Color.light.stroke.gray1)};
   }
+
+  @media (max-width: 1024px) {
+    max-width: 480px;
+    width: 100%;
+  }
+
+  @media (max-width: 600px) {
+    border: none;
+    padding: 52px 16px;
+  }
 `;
 
 const info = () => {
+  const navigate = useCustomNavigate();
+
   const { isDarkMode } = useContext(DarkModeContext);
-  const [withdrawModalOpened, setWithdrawModalOpened] = useState(false);
-  const [withdrawDoneModalOpened, setWithdrawDoneModalOpened] = useState(false);
+  const { isDesktop, isMobile } = useContext(MediaQueryContext);
+  const { openModal, closeModal } = useContext(ModalContext);
+
+  const openWithdrawModal = useCallback(() => {
+    openModal({
+      title: '정말로 탈퇴하시겠습니까?',
+      content: [
+        '회원탈퇴를 하시면 데이터가 모두 삭제됩니다.',
+        '모든 데이터는 복구가 불가능합니다.',
+      ],
+      buttonType: 2,
+      buttonDirection: 'horizontal',
+      primaryButtonLabel: '취소하기',
+      secondaryButtonLabel: '탈퇴하기',
+      secondaryButtonType: true,
+      onSecondaryButtonClick: () => {
+        openWithdrowDoneModal();
+      },
+      onPrimaryButtonClick: () => closeModal(),
+      reverseButtonOrder: true,
+    });
+  }, []);
+
+  const openWithdrowDoneModal = useCallback(() => {
+    openModal({
+      title: '탈퇴가 완료되었습니다.',
+      content: [
+        '그동안 한국기술마켓을 이용해주셔서 감사합니다.',
+        '좋은 하루 보내세요. 감사합니다.',
+      ],
+      buttonType: 1,
+      primaryButtonLabel: '확인하기',
+      onPrimaryButtonClick: () => {
+        navigate('/');
+        closeModal();
+      },
+    });
+  }, []);
+
   const [pwMode, setPwMode] = useState(false);
 
   const [pwChangeAvailable, setPwChangeAvailable] = useState(false);
@@ -185,41 +240,12 @@ const info = () => {
 
   return (
     <>
-      <Modal
-        title="정말로 탈퇴하시겠습니까?"
-        content={[
-          '회원탈퇴를 하시면 데이터가 모두 삭제됩니다.',
-          '모든 데이터는 복구가 불가능합니다.',
-        ]}
-        buttonType={2}
-        buttonDirection={'horizontal'}
-        primaryButtonLabel={'취소하기'}
-        secondaryButtonLabel={'탈퇴하기'}
-        secondaryButtonType={true}
-        visible={withdrawModalOpened}
-        onSecondaryButtonClick={() => {
-          setWithdrawModalOpened(false);
-          setWithdrawDoneModalOpened(true);
-        }}
-        onPrimaryButtonClick={() => setWithdrawModalOpened(false)}
-        reverseButtonOrder={true}
-      />
-      <Modal
-        title="탈퇴가 완료되었습니다."
-        content={[
-          '그동안 한국기술마켓을 이용해주셔서 감사합니다.',
-          '좋은 하루 보내세요. 감사합니다.',
-        ]}
-        buttonType={1}
-        primaryButtonLabel={'확인하기'}
-        visible={withdrawDoneModalOpened}
-        onPrimaryButtonClick={() => navigate('/')}
-      />
       <span
         style={{
-          ...Font.title.display3,
+          ...(isDesktop ? Font.title.display3 : Font.title.display1),
           color: isDarkMode ? '' : Color.light.text.primary,
-          marginBottom: '36px',
+          marginBottom: isMobile ? '0' : '36px',
+          marginTop: isDesktop ? '0' : '60px',
         }}
       >
         내 정보
@@ -550,12 +576,14 @@ const info = () => {
       </InfoContainer>
       <div
         style={{
-          width: '560px',
+          width: isDesktop ? '560px' : 'min(480px, 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'end',
           marginTop: '24px',
           marginBottom: '60px',
+          boxSizing: 'border-box',
+          padding: isMobile ? '0 16px' : '',
         }}
       >
         <TextButton
@@ -564,11 +592,11 @@ const info = () => {
           type="UNDERLINE"
           text="회원탈퇴"
           size="S"
-          onClick={() => setWithdrawModalOpened(true)}
+          onClick={() => openWithdrawModal()}
         />
       </div>
     </>
   );
 };
 
-export default info;
+export default withPageLoadedEffect(info);

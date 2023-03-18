@@ -1,11 +1,12 @@
-import { navigate } from 'gatsby';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FreeContainer } from '../../components/account/Container';
 import { Summary, Title } from '../../components/account/Text';
 import { DefaultButton } from '../../components/Button';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { useCustomNavigate } from '../../hooks/useCustomNavigate';
 import Color from '../../styles/Color';
 import Font from '../../styles/Font';
 
@@ -19,7 +20,8 @@ const ChooseContainer = styled.div`
   @media (max-width: 1024px) {
     flex-direction: column;
     width: 100%;
-    max-width: 420px;
+    max-width: 388px;
+    box-sizing: border-box;
   }
 `;
 
@@ -86,6 +88,8 @@ const choose = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [userType, setUserType] = useState<'STANDARD' | 'ENTERPRISE'>();
   const { isDesktop } = useContext(MediaQueryContext);
+  const navigate = useCustomNavigate();
+
   return (
     <FreeContainer>
       <Title style={{ marginBottom: '12px' }}>회원가입</Title>
@@ -874,7 +878,7 @@ const choose = () => {
         size="L"
         style="PRIMARY"
         state={userType ? 'DEFAULT' : 'DISABLED'}
-        width={'min(420px, 100%)'}
+        width={'min(388px, 100%)'}
         onClick={() => {
           try {
             localStorage.setItem('JoinUserType', userType ?? 'STANDARD');
@@ -892,4 +896,4 @@ const choose = () => {
   );
 };
 
-export default choose;
+export default withPageLoadedEffect(choose);

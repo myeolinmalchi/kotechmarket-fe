@@ -17,6 +17,8 @@ import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 import { navigate } from 'gatsby';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import { ToastContext } from '../contexts/ToastProvider';
+import { useCustomNavigate } from '../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../hocs/withPageLoadedEffect';
 
 const TagContainer = styled.div<{ isDarkMode: boolean }>`
   border-radius: 4px;
@@ -145,9 +147,7 @@ const index = () => {
   const tagContainer = useHorizontalScroll();
   const { isDesktop, isTablet, isMobile } = React.useContext(MediaQueryContext);
   const { alertToast } = React.useContext(ToastContext);
-  React.useEffect(() => {
-    alertToast(2, '전화번호 정보 변경이 완료되었습니다.');
-  }, []);
+  const navigate = useCustomNavigate();
   return (
     <>
       <ImageCarousel
@@ -446,4 +446,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default withPageLoadedEffect(index);

@@ -9,7 +9,7 @@ import Shadow from '../styles/Shadow';
 
 type ButtonStyle = 'PRIMARY' | 'SECONDARY' | 'OUTLINE';
 type ButtonState = 'DEFAULT' | 'DISABLED';
-type ButtonSize = 'S' | 'M' | 'L' | 'XL';
+type ButtonSize = 'SS' | 'S' | 'M' | 'L' | 'XL';
 type ButtonType = 'NONE' | 'LEFT' | 'RIGHT' | 'UNDERLINE';
 
 interface ButtonProps {
@@ -228,6 +228,13 @@ export const DefaultButton = ({
             padding: '14px 16px',
             ...Font.body.body3,
           };
+        } else if (size === 'SS') {
+          return {
+            height: height ?? '23px',
+            padding: '6px 12px',
+            ...Font.body.caption,
+            fontSize: 'clamp(8px, 2.5vw, 10px)',
+          };
         }
       })(),
       ...(() => {
@@ -317,6 +324,7 @@ export const DefaultButton = ({
           }
         }
       })(),
+      boxSizing: 'border-box',
     }),
     [style, size, type, width, isHovered, isActivated, state]
   );

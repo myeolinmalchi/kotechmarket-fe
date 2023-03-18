@@ -1,6 +1,4 @@
-import { navigate } from 'gatsby';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
 import {
   InputContainer,
   InputWrapper,
@@ -10,6 +8,8 @@ import { DefaultButton, TextButton } from '../../../components/Button';
 import { TextField } from '../../../components/TextFields';
 import { DarkModeContext } from '../../../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../../../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
+import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
 import Color from '../../../styles/Color';
 import Font from '../../../styles/Font';
 
@@ -116,6 +116,7 @@ const pw = () => {
   };
 
   const { isDesktop } = useContext(MediaQueryContext);
+  const navigate = useCustomNavigate();
 
   return (
     <>
@@ -148,7 +149,6 @@ const pw = () => {
                     : Color.light.text.third,
                 width: '100%',
                 textAlign: 'start',
-                marginBottom: isDesktop ? '36px' : '24px',
               }}
             >
               {emailState === 1 && '입력하신 정보를 찾을 수 없습니다.'}
@@ -167,7 +167,6 @@ const pw = () => {
                 justifyContent: 'center',
                 gap: '8px',
                 width: '100%',
-                marginBottom: isDesktop ? '36px' : '24px',
               }}
             >
               <TextField
@@ -231,10 +230,7 @@ const pw = () => {
                 {pwState === 2 && '사용 가능한 비밀번호입니다.'}
               </span>
             </InputWrapper>
-            <InputWrapper
-              isDarkMode={isDarkMode}
-              style={{ marginBottom: isDesktop ? '36px' : '24px' }}
-            >
+            <InputWrapper isDarkMode={isDarkMode}>
               <span style={{ ...Font.body.body1 }}>
                 <span>*</span> 새 비밀번호 확인
               </span>
@@ -276,34 +272,34 @@ const pw = () => {
             </InputWrapper>
           </>
         )}
+        <DefaultButton
+          style={'PRIMARY'}
+          state={nextButtonDisabled ? 'DISABLED' : 'DEFAULT'}
+          type={'NONE'}
+          size={'L'}
+          width={'100%'}
+          onClick={() => {
+            if (currentStep === 0) {
+              setNextButtonDisabled(true);
+              setCurrentStep(1);
+            } else if (currentStep === 1) {
+              setNextButtonDisabled(true);
+              setCurrentStep(2);
+            } else {
+              changePW();
+            }
+          }}
+        >
+          {currentStep < 2 && <>다음으로</>}
+          {currentStep === 2 && <>비밀번호 재설정</>}
+        </DefaultButton>
       </InputContainer>
-      <DefaultButton
-        style={'PRIMARY'}
-        state={nextButtonDisabled ? 'DISABLED' : 'DEFAULT'}
-        type={'NONE'}
-        size={'L'}
-        width={'min(calc(100% - 32px), 420px)'}
-        onClick={() => {
-          if (currentStep === 0) {
-            setNextButtonDisabled(true);
-            setCurrentStep(1);
-          } else if (currentStep === 1) {
-            setNextButtonDisabled(true);
-            setCurrentStep(2);
-          } else {
-            changePW();
-          }
-        }}
-      >
-        {currentStep < 2 && <>다음으로</>}
-        {currentStep === 2 && <>비밀번호 재설정</>}
-      </DefaultButton>
       {currentStep === 0 && (
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: '',
             gap: '12px',
             marginTop: '14px',
           }}
@@ -332,4 +328,4 @@ const pw = () => {
   );
 };
 
-export default pw;
+export default withPageLoadedEffect(pw);

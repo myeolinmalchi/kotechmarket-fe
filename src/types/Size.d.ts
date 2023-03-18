@@ -1,2 +1,2 @@
-type Size = 'XL' | 'L' | 'M' | 'S';
+type Size = 'XL' | 'L' | 'M' | 'S' | 'M2';
 export default Size;

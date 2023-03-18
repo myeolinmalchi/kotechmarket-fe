@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { navigate } from 'gatsby';
 import { useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
@@ -10,6 +9,7 @@ import Font from '../styles/Font';
 import { useLocation } from '@gatsbyjs/reach-router';
 import { DefaultButton } from './Button';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
+import { useCustomNavigate } from '../hooks/useCustomNavigate';
 
 const Container = styled.div<{
   isOpened: boolean;
@@ -46,7 +46,7 @@ const Container = styled.div<{
       disabled ? '' : isOpened ? '240px' : '0'};
   }
 
-  @media (max-width: 600x) {
+  @media (max-width: 600px) {
     width: ${({ disabled, isOpened }) =>
       disabled ? '' : isOpened ? '100vw' : '0'};
     border: none;
@@ -190,6 +190,7 @@ const AccodianContainer = styled.div<{
 `;
 
 export const SideNav = () => {
+  const navigate = useCustomNavigate();
   const { isDarkMode } = useContext(DarkModeContext);
   const { isOpened, disabled, setDisabled, setIsOpened } =
     useContext(SideNavContext);
@@ -1444,6 +1445,7 @@ export const SideNav = () => {
                   isOpened={isOpened}
                   isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
+                  onClick={() => navigate('/mypage/info')}
                 >
                   <svg
                     width="24"
@@ -1516,6 +1518,9 @@ export const SideNav = () => {
                       isOpened={isOpened}
                       isDarkMode={isDarkMode}
                       disabled={!myPageOpened}
+                      onClick={() => {
+                        navigate('/mypage/manager');
+                      }}
                     >
                       <svg
                         width="24"

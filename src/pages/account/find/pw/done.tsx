@@ -5,6 +5,7 @@ import { DarkModeContext } from '../../../../contexts/DarkModeProvider';
 import { navigate } from 'gatsby';
 import { DefaultButton } from '../../../../components/Button';
 import { MediaQueryContext } from '../../../../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../../../../hocs/withPageLoadedEffect';
 
 const done = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -238,4 +239,4 @@ const done = () => {
   );
 };
 
-export default done;
+export default withPageLoadedEffect(done);

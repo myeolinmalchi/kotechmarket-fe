@@ -19,19 +19,22 @@ interface ModalProps {
   onSecondaryButtonClick?: (e: React.MouseEvent) => void;
   secondaryButtonType?: boolean;
   closeModal?: () => void;
-  visible: boolean;
+  visible?: boolean;
   reverseButtonOrder?: boolean;
 }
 
 const ModalContainer = styled.div<{ visible: boolean }>`
-  display: ${(props) => (props.visible ? 'flex' : 'none')};
+  position: fixed;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  display: flex;
+  opacity: ${(props) => (props.visible ? '1' : '0')};
+  z-index: ${(props) => (props.visible ? '1000000000' : '0')};
+  transition: opacity 0.2s;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000000000;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background: rgb(0, 0, 0, 0.4);
 `;
@@ -109,10 +112,24 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const modalContainerRef = useRef<HTMLDivElement>(null);
+
+  const [zIndex, setZindex] = React.useState(0);
+  React.useEffect(() => {
+    if (!visible) {
+      setTimeout(() => {
+        setZindex(0);
+      }, 200);
+    } else {
+      setZindex(1000000000);
+    }
+  }, [visible]);
   return (
     <ModalContainer
       ref={modalContainerRef}
-      visible={visible}
+      visible={visible ?? false}
+      style={{
+        zIndex,
+      }}
       onClick={(e: React.MouseEvent) => {
         if (modalContainerRef.current === e.target) {
           closeModal?.();
