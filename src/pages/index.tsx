@@ -152,12 +152,10 @@ const index = () => {
     <>
       <ImageCarousel
         images={[
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-          'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
+          'https://www.tpiinsight.co.kr/app/uploads/2020/07/%EA%B2%BD%EC%98%81%EC%BB%A8%EC%84%A4%ED%8C%85-%ED%9A%8C%EC%82%AC.jpg',
+          'https://www.tpiinsight.co.kr/app/uploads/2020/07/%EA%B2%BD%EC%98%81%EC%BB%A8%EC%84%A4%ED%8C%85-%ED%9A%8C%EC%82%AC.jpg',
+          'https://www.tpiinsight.co.kr/app/uploads/2020/07/%EA%B2%BD%EC%98%81%EC%BB%A8%EC%84%A4%ED%8C%85-%ED%9A%8C%EC%82%AC.jpg',
+          'https://www.tpiinsight.co.kr/app/uploads/2020/07/%EA%B2%BD%EC%98%81%EC%BB%A8%EC%84%A4%ED%8C%85-%ED%9A%8C%EC%82%AC.jpg',
         ]}
       />
       <TagContainer isDarkMode={isDarkMode} ref={tagContainer}>
@@ -198,7 +196,9 @@ const index = () => {
         <CardContainer>
           {new Array(isDesktop ? 12 : isTablet ? 9 : 8).fill(0).map(() => (
             <ContentCard
-              src={'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg'}
+              src={
+                'https://blog.kakaocdn.net/dn/FvgoH/btroVrBfne2/TyxT9NTywOkvBhLin5qZs0/img.jpg'
+              }
               marked={false}
               width={
                 isDesktop
@@ -254,7 +254,7 @@ const index = () => {
           {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <EventCard
               src={
-                'https://image.ytn.co.kr/osen/2022/03/5e7737ec-4424-493a-8a60-4a13dda16f18.jpg'
+                'https://www.namutech.co.kr/wp-content/uploads/2020/03/main-section-002.jpg'
               }
               marked={false}
               width={
@@ -309,7 +309,7 @@ const index = () => {
             <SpCard
               isProceeding={true}
               src={
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7BBH-t4nt2AKo-TEEfoGzJGx08laOgwYSiQ&usqp=CAU'
+                'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201506/15/htm_20150615180939534.jpg'
               }
               marked={false}
               width={
@@ -354,7 +354,7 @@ const index = () => {
           {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <NewsCard
               src={
-                'http://img.segye.com/content/image/2020/08/07/20200807507499.jpg'
+                'https://img.freepik.com/premium-photo/innovation-technology-for-business-finance-background_31965-2378.jpg'
               }
               marked={false}
               width={
@@ -364,7 +364,7 @@ const index = () => {
                   ? 'calc(33.3% - 13.3px)'
                   : 'calc(50% - 8px)'
               }
-              title={'안녕하세요 저는 기술소식카드입니다.'}
+              title={'안녕하세요 저는 뉴스 카드입니다.'}
               summary={
                 '국가는 과학기술의 혁신과 정보 및 인력의 개발을 통하여 국민경제의 발전에 노력하여야 한다. 재산권의 행사는 공공복리에 적합하도록 하여야 한다. 법관은 탄핵 또는 금고 이상의 형의 선고에 의하지 아니하고는 파면되지 아니하며, 징계처분에 의하지 아니하고는 정직·감봉 기타 불리한 처분을 받지 아니한다.'
               }
@@ -414,7 +414,9 @@ const index = () => {
             {new Array(12).fill(0).map((_, idx) => (
               <SubscribeCard
                 summary={'한줄소개'}
-                src={'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg'}
+                src={
+                  'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png'
+                }
                 minWidth={'max(150px, calc(25% - 8px))'}
                 width={'calc(40% - 8px)'}
                 title={`업체 이름${idx}`}
@@ -428,17 +430,14 @@ const index = () => {
       {isDesktop && (
         <ChannelCarousel
           images={[
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
-            'https://img.hankyung.com/photo/202108/BF.27112611.1.jpg',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
+            'https://blog.kakaocdn.net/dn/cqr8Fg/btroYjJwRj0/t0Q2qchFFksi6GbOiTGpt0/img.png',
           ]}
         />
       )}

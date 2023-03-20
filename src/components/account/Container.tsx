@@ -35,6 +35,7 @@ export const FreeContainer = styled.div`
     margin-bottom: 120px;
   }
 `;
+
 export const InputContainer = styled.div<{
   width?: string;
   padding?: string;
