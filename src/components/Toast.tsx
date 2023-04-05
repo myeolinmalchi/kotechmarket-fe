@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import { SideNavContext } from '../contexts/SideNavProvider';
 import { ToastContext } from '../contexts/ToastProvider';
-import Color from '../styles/Color';
 import Font from '../styles/Font';
+import { ColorType } from '../types/Style';
 
 const ToastContainer = styled.div<{
-  isDarkMode: boolean;
+  Color: ColorType;
   isSideNavOpened: boolean;
   isSideNavDisabled: boolean;
   visible: boolean;
@@ -29,10 +29,8 @@ const ToastContainer = styled.div<{
   height: 56px;
   border-radius: 4px;
 
-  border: 1px solid
-    ${(props) => (props.isDarkMode ? '' : Color.light.stroke.gray1)};
-  background: ${(props) =>
-    props.isDarkMode ? '' : Color.light.background.white};
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
+  background: ${(props) => props.Color.background.default};
 
   display: flex;
   align-items: center;
@@ -46,13 +44,13 @@ const ToastContainer = styled.div<{
 `;
 
 export const Toast = () => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const { isOpened, disabled } = useContext(SideNavContext);
 
   const { state, visible, text } = useContext(ToastContext);
+  const { Color } = useStyleContext();
   return (
     <ToastContainer
-      isDarkMode={isDarkMode}
+      Color={Color}
       isSideNavOpened={isOpened}
       isSideNavDisabled={disabled}
       visible={visible}
@@ -107,7 +105,7 @@ export const Toast = () => {
       <span
         style={{
           ...Font.body.body2,
-          color: isDarkMode ? '' : Color.light.text.primary,
+          color: Color.text.primary,
         }}
       >
         {text}

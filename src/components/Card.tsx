@@ -1,14 +1,19 @@
+// TODO 다크모드 로직 변경
+
 import * as React from 'react';
 import { useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
 import Color from '../styles/Color';
 import Font from '../styles/Font';
+import { ColorType } from '../types/Style';
 import Avatar from './Avatar';
 import { DefaultButton } from './Button';
 import { Tag } from './Tag';
+
 const fadeIn = keyframes`
   0% {
     opacity: 0;
@@ -17,43 +22,12 @@ const fadeIn = keyframes`
     opacity: 1;
   }
 `;
-const ImageArea = styled.div<{
-  src?: string;
-  loaded?: boolean;
-  isDarkMode: boolean;
-}>`
-  background-image: url(${({ src }) => src});
-  cursor: pointer;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  //height: 180px;
-  padding-top: 66.66%;
-  width: 100%;
-  border: 1px solid
-    ${({ isDarkMode }) => (isDarkMode ? '' : Color.light.stroke.gray1)};
-  border-radius: 4px;
-  position: relative;
 
-  opacity: ${({ loaded }) => (loaded ? 1 : 0)};
-  animation: ${({ loaded }) =>
-    loaded
-      ? css`
-          ${fadeIn} 0.3s ease-in-out forwards
-        `
-      : 'none'};
-`;
-
-const ImageMarkIconArea = styled.div<{ isDarkMode: boolean }>`
+const ImageMarkIconArea = styled.div`
   position: absolute;
   top: 8px;
   right: 8px;
-  border: 1px solid
-    ${({ isDarkMode }) => (isDarkMode ? '' : Color.light.stroke.gray1)};
   border-radius: 4px;
-
-  background-color: ${({ isDarkMode }) =>
-    isDarkMode ? '' : Color.light.background.gray1};
 
   width: 24px;
   height: 24px;
@@ -64,95 +38,77 @@ const ImageMarkIconArea = styled.div<{ isDarkMode: boolean }>`
   justify-content: center;
 `;
 
-const ImageMarkIcon = ({
-  marked,
-  isDarkMode,
-}: {
-  marked: boolean;
-  isDarkMode: boolean;
-}) => {
-  if (isDarkMode) {
-    if (marked) {
-      return (
-        <>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M6.19254 1.14046C6.49144 0.421829 7.50946 0.421828 7.80835 1.14046L9.19635 4.4776L12.7991 4.76643C13.5749 4.82863 13.8895 5.79682 13.2984 6.30316L10.5535 8.65446L11.3921 12.1701C11.5727 12.9272 10.7491 13.5256 10.0849 13.1199L7.00045 11.2359L3.91601 13.1199C3.2518 13.5256 2.42821 12.9272 2.6088 12.1701L3.44741 8.65446L0.702509 6.30316C0.111416 5.79682 0.425998 4.82863 1.20182 4.76643L4.80455 4.4776L6.19254 1.14046Z"
-              fill="#FFC63E"
-            />
-          </svg>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6.65376 1.33247C6.78185 1.02449 7.21815 1.02449 7.34625 1.33247L8.76356 4.74011C8.81757 4.86995 8.93967 4.95866 9.07984 4.9699L12.7587 5.26483C13.0912 5.29149 13.226 5.70643 12.9727 5.92343L10.1698 8.3244C10.063 8.41588 10.0163 8.55942 10.049 8.6962L10.9053 12.2861C10.9827 12.6106 10.6297 12.867 10.3451 12.6932L7.19547 10.7694C7.07547 10.6961 6.92454 10.6961 6.80453 10.7694L3.65494 12.6932C3.37028 12.867 3.01731 12.6106 3.0947 12.2861L3.95103 8.6962C3.98366 8.55942 3.93702 8.41588 3.83022 8.3244L1.02734 5.92343C0.774013 5.70643 0.908835 5.29149 1.24133 5.26483L4.92016 4.9699C5.06033 4.95866 5.18244 4.86995 5.23644 4.74011L6.65376 1.33247Z"
-              stroke="#D8D8D8"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </>
-      );
-    }
+const ImageArea = styled.div<{
+  src?: string;
+  loaded?: boolean;
+  Color: ColorType;
+}>`
+  background-image: url(${({ src }) => src});
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  //height: 180px;
+  padding-top: 66.66%;
+  width: 100%;
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
+  border-radius: 4px;
+  position: relative;
+
+  opacity: ${({ loaded }) => (loaded ? 1 : 0)};
+  animation: ${({ loaded }) =>
+    loaded
+      ? css`
+          ${fadeIn} 0.3s ease-in-out forwards
+        `
+      : 'none'};
+
+  ${ImageMarkIconArea} {
+    border: 1px solid ${(props) => props.Color.stroke.gray1};
+    background-color: ${(props) => props.Color.background.gray1};
+  }
+`;
+
+const ImageMarkIcon = ({ marked }: { marked: boolean }) => {
+  if (marked) {
+    return (
+      <>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M6.19254 1.14046C6.49144 0.421829 7.50946 0.421828 7.80835 1.14046L9.19635 4.4776L12.7991 4.76643C13.5749 4.82863 13.8895 5.79682 13.2984 6.30316L10.5535 8.65446L11.3921 12.1701C11.5727 12.9272 10.7491 13.5256 10.0849 13.1199L7.00045 11.2359L3.91601 13.1199C3.2518 13.5256 2.42821 12.9272 2.6088 12.1701L3.44741 8.65446L0.702509 6.30316C0.111416 5.79682 0.425998 4.82863 1.20182 4.76643L4.80455 4.4776L6.19254 1.14046Z"
+            fill="#FFC63E"
+          />
+        </svg>
+      </>
+    );
   } else {
-    if (marked) {
-      return (
-        <>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M6.19254 1.14046C6.49144 0.421829 7.50946 0.421828 7.80835 1.14046L9.19635 4.4776L12.7991 4.76643C13.5749 4.82863 13.8895 5.79682 13.2984 6.30316L10.5535 8.65446L11.3921 12.1701C11.5727 12.9272 10.7491 13.5256 10.0849 13.1199L7.00045 11.2359L3.91601 13.1199C3.2518 13.5256 2.42821 12.9272 2.6088 12.1701L3.44741 8.65446L0.702509 6.30316C0.111416 5.79682 0.425998 4.82863 1.20182 4.76643L4.80455 4.4776L6.19254 1.14046Z"
-              fill="#FFC63E"
-            />
-          </svg>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6.65376 1.33247C6.78185 1.02449 7.21815 1.02449 7.34625 1.33247L8.76356 4.74011C8.81757 4.86995 8.93967 4.95866 9.07984 4.9699L12.7587 5.26483C13.0912 5.29149 13.226 5.70643 12.9727 5.92343L10.1698 8.3244C10.063 8.41588 10.0163 8.55942 10.049 8.6962L10.9053 12.2861C10.9827 12.6106 10.6297 12.867 10.3451 12.6932L7.19547 10.7694C7.07547 10.6961 6.92454 10.6961 6.80453 10.7694L3.65494 12.6932C3.37028 12.867 3.01731 12.6106 3.0947 12.2861L3.95103 8.6962C3.98366 8.55942 3.93702 8.41588 3.83022 8.3244L1.02734 5.92343C0.774013 5.70643 0.908835 5.29149 1.24133 5.26483L4.92016 4.9699C5.06033 4.95866 5.18244 4.86995 5.23644 4.74011L6.65376 1.33247Z"
-              stroke="#D8D8D8"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </>
-      );
-    }
+    return (
+      <>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M6.65376 1.33247C6.78185 1.02449 7.21815 1.02449 7.34625 1.33247L8.76356 4.74011C8.81757 4.86995 8.93967 4.95866 9.07984 4.9699L12.7587 5.26483C13.0912 5.29149 13.226 5.70643 12.9727 5.92343L10.1698 8.3244C10.063 8.41588 10.0163 8.55942 10.049 8.6962L10.9053 12.2861C10.9827 12.6106 10.6297 12.867 10.3451 12.6932L7.19547 10.7694C7.07547 10.6961 6.92454 10.6961 6.80453 10.7694L3.65494 12.6932C3.37028 12.867 3.01731 12.6106 3.0947 12.2861L3.95103 8.6962C3.98366 8.55942 3.93702 8.41588 3.83022 8.3244L1.02734 5.92343C0.774013 5.70643 0.908835 5.29149 1.24133 5.26483L4.92016 4.9699C5.06033 4.95866 5.18244 4.86995 5.23644 4.74011L6.65376 1.33247Z"
+            stroke="#D8D8D8"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </>
+    );
   }
 };
 
@@ -166,7 +122,6 @@ const ImageBox = ({
   onClick?: () => void;
 }) => {
   const navigate = useCustomNavigate();
-  const { isDarkMode } = useContext(DarkModeContext);
   const imgRef = React.useRef<HTMLDivElement>(null);
   const observerRef = React.useRef<IntersectionObserver>();
   const [onPage, setOnPage] = React.useState(false);
@@ -205,8 +160,11 @@ const ImageBox = ({
     imgRef.current && observerRef.current.observe(imgRef.current);
   }, []);
 
+  const { Color } = useStyleContext();
+
   return (
     <ImageArea
+      Color={Color}
       loaded={loaded}
       ref={imgRef}
       src={
@@ -214,11 +172,10 @@ const ImageBox = ({
           ? src ?? '/images/components/Card/placeholder.png'
           : '/images/components/Card/placeholder.png'
       }
-      isDarkMode={isDarkMode}
       onClick={onClick}
     >
-      <ImageMarkIconArea isDarkMode={isDarkMode}>
-        <ImageMarkIcon marked={marked} isDarkMode={isDarkMode} />
+      <ImageMarkIconArea>
+        <ImageMarkIcon marked={marked} />
       </ImageMarkIconArea>
     </ImageArea>
   );
@@ -303,8 +260,7 @@ const CardDetailInfo = ({
   date: Date | number;
   isProceeding?: boolean;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
-
+  const { Color } = useStyleContext();
   return (
     <CardDetailContainer>
       <CardAuthorContainer>
@@ -314,11 +270,7 @@ const CardDetailInfo = ({
             <span
               style={{
                 ...Font.body.body1,
-                color: isDarkMode
-                  ? ''
-                  : isProceeding
-                  ? Color.light.text.blue
-                  : Color.light.text.secondary,
+                color: isProceeding ? Color.text.blue : Color.text.secondary,
               }}
             >
               {author.name}
@@ -331,11 +283,7 @@ const CardDetailInfo = ({
       <span
         style={{
           ...Font.body.body1,
-          color: isDarkMode
-            ? ''
-            : isProceeding
-            ? Color.light.text.blue
-            : Color.light.text.third,
+          color: isProceeding ? Color.text.blue : Color.text.third,
         }}
       >
         {typeof date === 'number'
@@ -355,13 +303,13 @@ const CardSummary = ({
   content: string;
   center: boolean;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
   return (
     <span
       style={{
         ...Font.body.bodyLong1,
         width: '100%',
-        color: isDarkMode ? '' : Color.light.text.secondary,
+        color: Color.text.secondary,
         WebkitBoxOrient: 'vertical',
         WebkitLineClamp: '2',
         overflow: 'hidden',
@@ -437,8 +385,8 @@ export const NewsCard = ({
   isMobile: boolean;
   category?: string;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const navigate = useCustomNavigate();
+  const { Color } = useStyleContext();
   return (
     <CardContainer width={width} isMobile={isMobile}>
       <ImageBox src={src} marked={marked} />
@@ -456,7 +404,7 @@ export const NewsCard = ({
             ...Font.body.bodyLong1,
             width: '100%',
             textAlign: 'start',
-            color: isDarkMode ? '' : Color.light.text.secondary,
+            color: Color.text.secondary,
           }}
         >
           {category}
@@ -494,7 +442,7 @@ export const EventCard = ({
   width: string;
   isMobile: boolean;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
   return (
     <CardContainer width={width} isMobile={isMobile}>
       <ImageBox src={src} marked={marked} />
@@ -514,7 +462,7 @@ export const EventCard = ({
                 ...Font.body.bodyLong1,
                 width: '100%',
                 textAlign: 'start',
-                color: isDarkMode ? '' : Color.light.text.secondary,
+                color: Color.text.secondary,
               }}
             >
               {`${preInfo.date.getFullYear()}.${
@@ -553,7 +501,7 @@ export const SpCard = ({
   category: string;
   isProceeding: boolean;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
   const navigate = useCustomNavigate();
   return (
     <CardContainer width={width} isMobile={isMobile}>
@@ -576,7 +524,7 @@ export const SpCard = ({
             ...Font.body.bodyLong1,
             width: '100%',
             textAlign: 'start',
-            color: isDarkMode ? '' : Color.light.text.secondary,
+            color: Color.text.secondary,
           }}
         >
           {category}
@@ -593,11 +541,10 @@ export const SpCard = ({
   );
 };
 
-const RoundImage = styled.div<{ src?: string; isDarkMode: boolean }>`
+const RoundImage = styled.div<{ src?: string; Color: ColorType }>`
   width: 100px;
   height: 100px;
-  border: 1px solid
-    ${({ isDarkMode }) => (isDarkMode ? '' : Color.light.stroke.gray1)};
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
   border-radius: 100px;
   background-image: url(${({ src }) => src});
   background-repeat: no-repeat;
@@ -622,14 +569,14 @@ export const SubscribeCard = ({
   isMobile: boolean;
   minWidth?: string;
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
   return (
     <CardContainer
       width={width}
       isMobile={isMobile}
       style={{ minWidth: minWidth }}
     >
-      <RoundImage src={src} isDarkMode={isDarkMode}></RoundImage>
+      <RoundImage src={src} Color={Color}></RoundImage>
       <div
         style={{
           display: 'flex',

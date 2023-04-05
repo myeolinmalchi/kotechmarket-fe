@@ -4,54 +4,14 @@ import styled, { css } from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { SideNavContext } from '../contexts/SideNavProvider';
 import { UserLoginContext } from '../contexts/UserLoginProvider';
-import Color from '../styles/Color';
 import Font from '../styles/Font';
 import { useLocation } from '@gatsbyjs/reach-router';
 import { DefaultButton } from './Button';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
-
-const Container = styled.div<{
-  isOpened: boolean;
-  isDarkMode: boolean;
-  disabled: boolean;
-}>`
-  display: flex;
-  height: -webkit-fill-available;
-  width: ${(props) =>
-    props.disabled ? '0px' : props.isOpened ? '240px' : '76px'};
-  position: fixed;
-  z-index: 1;
-  top: 60px;
-  left: 0;
-
-  background: ${Color.light.background.white};
-  border-right: 1px solid ${Color.light.stroke.gray1};
-  ${(props) =>
-    props.isDarkMode &&
-    css`
-      background: black;
-      border-right: 1px solid black;
-    `}
-
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: column;
-  gap: 0px;
-  transition: width 0.2s;
-  overflow: hidden;
-
-  @media (max-width: 1024px) {
-    width: ${({ disabled, isOpened }) =>
-      disabled ? '' : isOpened ? '240px' : '0'};
-  }
-
-  @media (max-width: 600px) {
-    width: ${({ disabled, isOpened }) =>
-      disabled ? '' : isOpened ? '100vw' : '0'};
-    border: none;
-  }
-`;
+import iosInnerHeight from 'ios-inner-height';
+import { ColorType } from '../types/Style';
+import { useStyleContext } from '../contexts/AppContextProvider';
 
 const ListSection = styled.div<{ isOpened: boolean }>`
   width: 100%;
@@ -70,27 +30,12 @@ const ListSection = styled.div<{ isOpened: boolean }>`
   ::-webkit-scrollbar {
     width: 5px;
   }
-
-  ::-webkit-scrollbar-thumb {
-    background: ${Color.light.stroke.gray2};
-  }
-
-  @media (max-width: 1024px) {
-  }
 `;
 
 const FooterSection = styled.div<{ isOpened: boolean; isDarkMode: boolean }>`
   height: 80px;
   min-height: 80px;
   width: 240px;
-  background: ${Color.light.background.gray1};
-  border-top: ${Color.light.stroke.gray3};
-  ${(props) =>
-    props.isDarkMode &&
-    css`
-      background: ${Color.light.background.gray1};
-      border-top: ${Color.light.stroke.gray3};
-    `}
 
   display: flex;
   align-items: center;
@@ -103,21 +48,21 @@ const FooterSection = styled.div<{ isOpened: boolean; isDarkMode: boolean }>`
   }
 `;
 
-const ListUnit = styled.button<{
+const $ListUnit = styled.button<{
   isOpened: boolean;
   isSelected?: boolean;
   currentPage?: boolean;
-  isDarkMode: boolean;
   disabled?: boolean;
+  Color: ColorType;
 }>`
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   width: 100%;
   background: ${(props) =>
-    props.isSelected ? Color.light.background.gray1 : 'none'};
+    props.isSelected ? (props) => props.Color.background.gray1 : 'none'};
   ${(props) =>
     props.currentPage &&
     css`
-      background: ${props.isDarkMode ? '' : Color.light.background.gray1};
+      background: ${props.Color.background.gray1};
     `};
   height: ${(props) => (props.disabled ? '0px' : '48px')};
   border: none;
@@ -132,10 +77,7 @@ const ListUnit = styled.button<{
   box-sizing: border-box;
   cursor: pointer;
   &:hover {
-    background: ${(props) =>
-      props.isDarkMode
-        ? Color.dark.background.gray2
-        : Color.light.background.gray1};
+    background: ${(props) => props.Color.background.gray2};
   }
   transition: background 0.1s, padding 0.2s, height 0.2s, opacity 0.15s,
     min-height 0.2s, color 0.2s;
@@ -153,23 +95,45 @@ const ListUnit = styled.button<{
 
   span {
     color: ${(props) =>
-      props.isSelected ? Color.light.text.primary : Color.light.text.secondary};
-    ${(props) =>
-      props.isDarkMode &&
-      css`
-        color: ${props.isSelected
-          ? Color.dark.text.primary
-          : Color.dark.text.secondary};
-      `}
+      props.isSelected
+        ? (props) => props.Color.text.primary
+        : (props) => props.Color.text.secondary};
   }
 
   svg * {
-    ${(props) =>
-      props.isSelected &&
-      (props.isDarkMode ? `fill: ` : `fill: ${Color.light.text.primary}`)};
+    ${(props) => props.isSelected && `fill: ${props.Color.text.primary}`};
     transition: fill 0.2s;
   }
 `;
+
+const ListUnit = ({
+  children,
+  isOpened,
+  isSelected,
+  currentPage,
+  disabled,
+  onClick,
+}: React.PropsWithChildren & {
+  isOpened: boolean;
+  isSelected?: boolean;
+  currentPage?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+}) => {
+  const { Color } = useStyleContext();
+  return (
+    <$ListUnit
+      isOpened={isOpened}
+      isSelected={isSelected}
+      currentPage={currentPage}
+      disabled={disabled}
+      Color={Color}
+      onClick={onClick}
+    >
+      {children}
+    </$ListUnit>
+  );
+};
 
 const AccodianContainer = styled.div<{
   isSelected: boolean;
@@ -189,6 +153,54 @@ const AccodianContainer = styled.div<{
   overflow: hidden;
 `;
 
+const Container = styled.div<{
+  isOpened: boolean;
+  disabled: boolean;
+  height: number;
+  Color: ColorType;
+}>`
+  display: flex;
+  height: -webkit-fill-available;
+  width: ${(props) =>
+    props.disabled ? '0px' : props.isOpened ? '240px' : '76px'};
+  position: fixed;
+  z-index: 1;
+  top: 60px;
+  left: 0;
+
+  background: ${(props) => props.Color.background.default};
+  border-right: 1px solid ${(props) => props.Color.stroke.gray1};
+
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 0px;
+  transition: width 0.2s;
+  overflow: hidden;
+
+  @media (max-width: 1024px) {
+    width: ${({ disabled, isOpened }) =>
+      disabled ? '' : isOpened ? '240px' : '0'};
+
+    height: ${(props) => `${props.height - 64}px;`};
+  }
+
+  @media (max-width: 600px) {
+    width: ${({ disabled, isOpened }) =>
+      disabled ? '' : isOpened ? '100vw' : '0'};
+    border: none;
+  }
+
+  ${FooterSection} {
+    background: ${(props) => props.Color.background.gray1};
+    border-top: ${(props) => props.Color.stroke.gray3};
+  }
+
+  ${ListSection}::-webkit-scrollbar-thumb {
+    background: ${(props) => props.Color.stroke.gray2};
+  }
+`;
+
 export const SideNav = () => {
   const navigate = useCustomNavigate();
   const { isDarkMode } = useContext(DarkModeContext);
@@ -204,6 +216,20 @@ export const SideNav = () => {
   const [supportSelected, setSupportSelected] = useState(false);
   const [sctownSelected, setSctownSelected] = useState(false);
   const [myPageSelected, setMyPageSelected] = useState(false);
+
+  const [visibleViewportHeight, setVisibleViewportHeight] = useState<number>(0);
+
+  useEffect(() => {
+    function getVisibleViewportHeight() {
+      if (/(iPad|iPhone|iPod)/.test(navigator.userAgent)) {
+        return iosInnerHeight();
+      } else {
+        return window.innerHeight;
+      }
+    }
+
+    setVisibleViewportHeight((_) => getVisibleViewportHeight());
+  }, []);
 
   const resetSelected = () => {
     setSupportSelected(false);
@@ -241,15 +267,18 @@ export const SideNav = () => {
     }
   }, [isOpened]);
 
+  const { Color } = useStyleContext();
+
   return (
-    <Container isDarkMode={isDarkMode} isOpened={isOpened} disabled={disabled}>
+    <Container
+      Color={Color}
+      isOpened={isOpened}
+      disabled={disabled}
+      height={visibleViewportHeight}
+    >
       <ListSection isOpened={isOpened}>
         {userType > 0 && (
-          <ListUnit
-            isSelected={false}
-            isOpened={isOpened}
-            isDarkMode={isDarkMode}
-          >
+          <ListUnit isSelected={false} isOpened={isOpened}>
             <svg
               width="24"
               height="24"
@@ -282,7 +311,7 @@ export const SideNav = () => {
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    color: isDarkMode ? '' : Color.light.text.secondary,
+                    color: Color.text.secondary,
                   }}
                 >
                   기술찾기
@@ -305,11 +334,7 @@ export const SideNav = () => {
             )}
           </ListUnit>
         )}
-        <ListUnit
-          isSelected={false}
-          isOpened={isOpened}
-          isDarkMode={isDarkMode}
-        >
+        <ListUnit isSelected={false} isOpened={isOpened}>
           <svg
             width="24"
             height="24"
@@ -337,7 +362,7 @@ export const SideNav = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  color: isDarkMode ? '' : Color.light.text.secondary,
+                  color: Color.text.secondary,
                 }}
               >
                 기술이전
@@ -359,11 +384,7 @@ export const SideNav = () => {
             </>
           )}
         </ListUnit>
-        <ListUnit
-          isSelected={false}
-          isOpened={isOpened}
-          isDarkMode={isDarkMode}
-        >
+        <ListUnit isSelected={false} isOpened={isOpened}>
           <svg
             width="24"
             height="24"
@@ -437,7 +458,7 @@ export const SideNav = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  color: isDarkMode ? '' : Color.light.text.secondary,
+                  color: Color.text.secondary,
                 }}
               >
                 행사
@@ -462,7 +483,6 @@ export const SideNav = () => {
         <ListUnit
           currentPage={supportSelected}
           isOpened={isOpened}
-          isDarkMode={isDarkMode}
           onClick={() => {
             navigate('/support');
           }}
@@ -503,7 +523,7 @@ export const SideNav = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  color: isDarkMode ? '' : Color.light.text.secondary,
+                  color: Color.text.secondary,
                 }}
               >
                 지원사업
@@ -525,11 +545,7 @@ export const SideNav = () => {
             </>
           )}
         </ListUnit>
-        <ListUnit
-          isSelected={false}
-          isOpened={isOpened}
-          isDarkMode={isDarkMode}
-        >
+        <ListUnit isSelected={false} isOpened={isOpened}>
           <svg
             width="24"
             height="24"
@@ -562,7 +578,7 @@ export const SideNav = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  color: isDarkMode ? '' : Color.light.text.secondary,
+                  color: Color.text.secondary,
                 }}
               >
                 뉴스
@@ -587,7 +603,6 @@ export const SideNav = () => {
         <ListUnit
           isSelected={false}
           isOpened={isOpened}
-          isDarkMode={isDarkMode}
           onClick={() => navigate('/sctown')}
           currentPage={sctownSelected}
         >
@@ -623,7 +638,7 @@ export const SideNav = () => {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
-                  color: isDarkMode ? '' : Color.light.text.secondary,
+                  color: Color.text.secondary,
                 }}
               >
                 과학도시
@@ -662,7 +677,7 @@ export const SideNav = () => {
               style={{
                 textAlign: 'center',
                 ...Font.body.bodyLong1,
-                color: isDarkMode ? '' : Color.light.text.secondary,
+                color: Color.text.secondary,
               }}
             >
               로그인을 하면 더 많은
@@ -687,7 +702,6 @@ export const SideNav = () => {
             <ListUnit
               isSelected={channelOpened}
               isOpened={isOpened}
-              isDarkMode={isDarkMode}
               onClick={() => {
                 if (isOpened) {
                   setChannelOpened(!channelOpened);
@@ -727,7 +741,7 @@ export const SideNav = () => {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      color: isDarkMode ? '' : Color.light.text.secondary,
+                      color: Color.text.secondary,
                     }}
                   >
                     채널
@@ -758,7 +772,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!channelOpened}
                 >
                   <svg
@@ -781,7 +794,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         내 채널
@@ -792,7 +805,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!channelOpened}
                 >
                   <svg
@@ -815,7 +827,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         채널선정
@@ -828,7 +840,6 @@ export const SideNav = () => {
             <ListUnit
               isSelected={contentsOpened}
               isOpened={isOpened}
-              isDarkMode={isDarkMode}
               onClick={() => setContentsOpened(!contentsOpened)}
             >
               <svg
@@ -869,7 +880,7 @@ export const SideNav = () => {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      color: isDarkMode ? '' : Color.light.text.secondary,
+                      color: Color.text.secondary,
                     }}
                   >
                     콘텐츠
@@ -900,7 +911,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!contentsOpened}
                 >
                   <svg
@@ -923,7 +933,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         콘텐츠 등록
@@ -934,7 +944,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!contentsOpened}
                 >
                   <svg
@@ -957,7 +966,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         콘텐츠 관리
@@ -968,7 +977,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!contentsOpened}
                 >
                   <svg
@@ -991,7 +999,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         뉴스레터 설정
@@ -1002,7 +1010,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!contentsOpened}
                 >
                   <svg
@@ -1025,7 +1032,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         연구자 관리
@@ -1038,7 +1045,6 @@ export const SideNav = () => {
             <ListUnit
               isSelected={siteOpened}
               isOpened={isOpened}
-              isDarkMode={isDarkMode}
               onClick={() => setSiteOpened(!siteOpened)}
             >
               <svg
@@ -1066,7 +1072,7 @@ export const SideNav = () => {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      color: isDarkMode ? '' : Color.light.text.secondary,
+                      color: Color.text.secondary,
                     }}
                   >
                     사이트
@@ -1097,7 +1103,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!siteOpened}
                 >
                   <svg
@@ -1120,7 +1125,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         내 사이트
@@ -1131,7 +1136,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!siteOpened}
                 >
                   <svg
@@ -1154,7 +1158,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         사이트 설정
@@ -1171,7 +1175,6 @@ export const SideNav = () => {
             <ListUnit
               isSelected={myPageOpened}
               isOpened={isOpened}
-              isDarkMode={isDarkMode}
               onClick={() => setMyPageOpened(!myPageOpened)}
               currentPage={myPageSelected}
             >
@@ -1206,7 +1209,7 @@ export const SideNav = () => {
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
-                      color: isDarkMode ? '' : Color.light.text.secondary,
+                      color: Color.text.secondary,
                     }}
                   >
                     마이페이지
@@ -1237,7 +1240,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                 >
                   <svg
@@ -1260,7 +1262,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         요금제 관리
@@ -1271,7 +1273,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                   onClick={() => navigate('/mypage/stored')}
                 >
@@ -1295,7 +1296,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         보관함
@@ -1306,7 +1307,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                   onClick={() => navigate('/mypage/history')}
                 >
@@ -1330,7 +1330,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         시청기록
@@ -1341,7 +1341,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                 >
                   <svg
@@ -1364,7 +1363,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         구독채널
@@ -1375,7 +1374,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                 >
                   <svg
@@ -1398,7 +1396,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         신청한 행사
@@ -1409,7 +1407,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                 >
                   <svg
@@ -1432,7 +1429,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         문의 내역
@@ -1443,7 +1440,6 @@ export const SideNav = () => {
                 <ListUnit
                   isSelected={false}
                   isOpened={isOpened}
-                  isDarkMode={isDarkMode}
                   disabled={!myPageOpened}
                   onClick={() => navigate('/mypage/info')}
                 >
@@ -1467,7 +1463,7 @@ export const SideNav = () => {
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
-                          color: isDarkMode ? '' : Color.light.text.secondary,
+                          color: Color.text.secondary,
                         }}
                       >
                         내 정보
@@ -1480,7 +1476,6 @@ export const SideNav = () => {
                     <ListUnit
                       isSelected={false}
                       isOpened={isOpened}
-                      isDarkMode={isDarkMode}
                       disabled={!myPageOpened}
                     >
                       <svg
@@ -1503,9 +1498,7 @@ export const SideNav = () => {
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
-                              color: isDarkMode
-                                ? ''
-                                : Color.light.text.secondary,
+                              color: Color.text.secondary,
                             }}
                           >
                             영상 제작 현황
@@ -1516,7 +1509,6 @@ export const SideNav = () => {
                     <ListUnit
                       isSelected={false}
                       isOpened={isOpened}
-                      isDarkMode={isDarkMode}
                       disabled={!myPageOpened}
                       onClick={() => {
                         navigate('/mypage/manager');
@@ -1542,9 +1534,7 @@ export const SideNav = () => {
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
-                              color: isDarkMode
-                                ? ''
-                                : Color.light.text.secondary,
+                              color: Color.text.secondary,
                             }}
                           >
                             담당자 관리
@@ -1579,7 +1569,7 @@ export const SideNav = () => {
             style={{
               ...Font.body.caption,
               textAlign: 'center',
-              color: isDarkMode ? '' : Color.light.text.third,
+              color: Color.text.third,
               fontSize: '10px',
             }}
           >

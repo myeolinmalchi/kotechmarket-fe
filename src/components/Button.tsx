@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { useContext, useMemo } from 'react';
 import styled, { css } from 'styled-components';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { useMouseInteraction } from '../hooks/useMouseInteraction';
-import Color from '../styles/Color';
 import Font from '../styles/Font';
 import Shadow from '../styles/Shadow';
+import { ColorType } from '../types/Style';
 
 type ButtonStyle = 'PRIMARY' | 'SECONDARY' | 'OUTLINE';
 type ButtonState = 'DEFAULT' | 'DISABLED';
@@ -24,116 +25,6 @@ interface ButtonProps {
   height?: string;
 }
 
-const DefaultButton1 = styled.button<{
-  style: ButtonStyle;
-  state: ButtonState;
-  size: ButtonSize;
-  buttonType: ButtonType;
-  width?: string;
-  isDarkMode: boolean;
-}>`
-  // 공통
-  cursor: pointer;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  width: ${(props) => props.width ?? 'fit-content'};
-
-  // 사이즈 S
-  ${(props) =>
-    props.size === 'S' &&
-    css`
-      height: '33px';
-      padding: 8px 12px;
-    `}
-
-  // 사이즈 M
-    ${(props) =>
-    props.size === 'S' &&
-    css`
-      height: '33px';
-      padding: 8px 12px;
-    `}
-
-    // 사이즈 L
-    ${(props) =>
-    props.size === 'S' &&
-    css`
-      height: '33px';
-      padding: 8px 12px;
-    `}
-
-    // 사이즈 XL
-    ${(props) =>
-    props.size === 'S' &&
-    css`
-      height: '33px';
-      padding: 8px 12px;
-    `}
-
-    // 라이트모드
-    ${(props) =>
-    props.style === 'PRIMARY' &&
-    css`
-      background: ${Color.light.action.blue.filled};
-      color: ${Color.light.text.white};
-      border: none;
-      &:disabled {
-        background: ${Color.light.action.blue.disabled};
-        color: ${Color.light.text.disabled};
-      }
-      &:hover {
-        background: ${Color.light.action.blue.hover};
-      }
-      &:action {
-        background: ${Color.light.action.blue.pressed};
-      }
-    `}
-    ${(props) =>
-    props.style === 'SECONDARY' &&
-    css`
-      background: ${Color.light.action.gray.filled};
-      color: ${Color.light.text.white};
-      border: none;
-      &:disabled {
-        background: ${Color.light.action.gray.disabled};
-        color: ${Color.light.text.disabled};
-      }
-      &:hover {
-        background: ${Color.light.action.gray.hover};
-      }
-      &:action {
-        background: ${Color.light.action.gray.pressed};
-      }
-    `}
-    ${(props) =>
-    props.style === 'OUTLINE' &&
-    css`
-      background: none;
-      color: ${Color.light.text.secondary};
-      border: 1px solid ${Color.light.stroke.gray2};
-      &:disabled {
-        background: ${Color.light.background.gray2};
-      }
-      &:hover {
-        background: ${Color.light.background.gray1};
-      }
-      &:action {
-        background: ${Color.light.action.blue.pressed};
-      }
-    `}
-    // 다크모드
-    ${(props) =>
-    props.isDarkMode &&
-    css`
-      ${props.style === 'PRIMARY' && css``}
-      ${props.style === 'SECONDARY' && css``}
-            ${props.style === 'OUTLINE' && css``}
-    `}
-`;
-
 export const DefaultButton = ({
   style,
   state,
@@ -145,7 +36,7 @@ export const DefaultButton = ({
   children,
   height,
 }: ButtonProps) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
 
   const button = useRef<HTMLButtonElement>(null);
   const { isHovered, isActivated } = useMouseInteraction(button);
@@ -165,9 +56,9 @@ export const DefaultButton = ({
       if (state === 'DISABLED') {
         return ['black', '0.2'];
       } else if (style === 'OUTLINE') {
-        return [Color.light.text.secondary, '1'];
+        return [Color.text.secondary, '1'];
       } else {
-        return [Color.light.text.white, '1'];
+        return [Color.text.default, '1'];
       }
     })();
 
@@ -238,90 +129,87 @@ export const DefaultButton = ({
         }
       })(),
       ...(() => {
-        if (isDarkMode) {
-        } else {
-          if (style === 'PRIMARY') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.action.blue.disabled,
-                color: Color.light.text.disabled,
-                border: 'none',
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.action.blue.pressed,
-                color: Color.light.text.white,
-                border: 'none',
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.action.blue.hover,
-                color: Color.light.text.white,
-                border: 'none',
-              };
-            }
+        if (style === 'PRIMARY') {
+          if (state === 'DISABLED') {
             return {
-              background: Color.light.action.blue.filled,
-              color: Color.light.text.white,
+              background: Color.action.blue.disabled,
+              color: Color.text.disabled,
               border: 'none',
-            };
-          } else if (style === 'SECONDARY') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.action.gray.disabled,
-                color: Color.light.text.disabled,
-                border: 'none',
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.action.gray.pressed,
-                color: Color.light.text.white,
-                border: 'none',
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.action.gray.hover,
-                color: Color.light.text.white,
-                border: 'none',
-              };
-            }
-            return {
-              background: Color.light.action.gray.filled,
-              color: Color.light.text.white,
-              border: 'none',
-            };
-          } else if (style === 'OUTLINE') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.background.gray2,
-                color: Color.light.text.disabled,
-                border: `1px solid ${Color.light.stroke.gray1}`,
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.background.gray2,
-                color: Color.light.text.secondary,
-                border: `1px solid ${Color.light.stroke.gray2}`,
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.background.gray1,
-                color: Color.light.text.secondary,
-                border: `1px solid ${Color.light.stroke.gray2}`,
-              };
-            }
-            return {
-              background: 'none',
-              color: Color.light.text.secondary,
-              border: `1px solid ${Color.light.stroke.gray2}`,
             };
           }
+          if (isActivated) {
+            return {
+              background: Color.action.blue.pressed,
+              color: Color.text.default,
+              border: 'none',
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.action.blue.hover,
+              color: Color.text.default,
+              border: 'none',
+            };
+          }
+          return {
+            background: Color.action.blue.filled,
+            color: Color.text.default,
+            border: 'none',
+          };
+        } else if (style === 'SECONDARY') {
+          if (state === 'DISABLED') {
+            return {
+              background: Color.action.gray.disabled,
+              color: Color.text.disabled,
+              border: 'none',
+            };
+          }
+          if (isActivated) {
+            return {
+              background: Color.action.gray.pressed,
+              color: Color.text.default,
+              border: 'none',
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.action.gray.hover,
+              color: Color.text.default,
+              border: 'none',
+            };
+          }
+          return {
+            background: Color.action.gray.filled,
+            color: Color.text.default,
+            border: 'none',
+          };
+        } else if (style === 'OUTLINE') {
+          if (state === 'DISABLED') {
+            return {
+              background: Color.background.gray2,
+              color: Color.text.disabled,
+              border: `1px solid ${Color.stroke.gray1}`,
+            };
+          }
+          if (isActivated) {
+            return {
+              background: Color.background.gray2,
+              color: Color.text.secondary,
+              border: `1px solid ${Color.stroke.gray2}`,
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.background.gray1,
+              color: Color.text.secondary,
+              border: `1px solid ${Color.stroke.gray2}`,
+            };
+          }
+          return {
+            background: 'none',
+            color: Color.text.secondary,
+            border: `1px solid ${Color.stroke.gray2}`,
+          };
         }
       })(),
       boxSizing: 'border-box',
@@ -353,10 +241,10 @@ export const TextButton = ({
   text,
   height,
 }: ButtonProps & { height?: string }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
-
   const button = useRef<HTMLButtonElement>(null);
   const { isHovered, isActivated } = useMouseInteraction(button);
+
+  const { Color } = useStyleContext();
 
   const plusIcon = useMemo(() => {
     const [length, viewbox] = (() => {
@@ -372,27 +260,27 @@ export const TextButton = ({
     const [color, opacity] = (() => {
       if (style === 'PRIMARY') {
         if (state === 'DISABLED') {
-          return [Color.light.action.blue.disabled, '1'];
+          return [Color.action.blue.disabled, '1'];
         }
         if (isActivated) {
-          return [Color.light.action.blue.pressed, '1'];
+          return [Color.action.blue.pressed, '1'];
         }
         if (isHovered) {
-          return [Color.light.action.blue.hover, '1'];
+          return [Color.action.blue.hover, '1'];
         }
-        return [Color.light.action.blue.filled, '1'];
+        return [Color.action.blue.filled, '1'];
       }
       if (style === 'SECONDARY') {
         if (state === 'DISABLED') {
-          return [Color.light.action.gray.disabled, '1'];
+          return [Color.action.gray.disabled, '1'];
         }
         if (isActivated) {
-          return [Color.light.action.gray.pressed, '1'];
+          return [Color.action.gray.pressed, '1'];
         }
         if (isHovered) {
-          return [Color.light.action.gray.hover, '1'];
+          return [Color.action.gray.hover, '1'];
         }
-        return [Color.light.action.gray.filled, '1'];
+        return [Color.action.gray.filled, '1'];
       }
       return ['', ''];
     })();
@@ -443,47 +331,44 @@ export const TextButton = ({
       })(),
       textDecoration: type === 'UNDERLINE' ? 'underline' : '',
       ...(() => {
-        if (isDarkMode) {
-        } else {
-          if (style === 'PRIMARY') {
-            if (state === 'DISABLED') {
-              return {
-                color: Color.light.action.blue.disabled,
-              };
-            }
-            if (isActivated) {
-              return {
-                color: Color.light.action.blue.pressed,
-              };
-            }
-            if (isHovered) {
-              return {
-                color: Color.light.action.blue.hover,
-              };
-            }
+        if (style === 'PRIMARY') {
+          if (state === 'DISABLED') {
             return {
-              color: Color.light.action.blue.filled,
-            };
-          } else if (style === 'SECONDARY') {
-            if (state === 'DISABLED') {
-              return {
-                color: Color.light.action.gray.disabled,
-              };
-            }
-            if (isActivated) {
-              return {
-                color: Color.light.action.gray.pressed,
-              };
-            }
-            if (isHovered) {
-              return {
-                color: Color.light.action.gray.hover,
-              };
-            }
-            return {
-              color: Color.light.action.gray.filled,
+              color: Color.action.blue.disabled,
             };
           }
+          if (isActivated) {
+            return {
+              color: Color.action.blue.pressed,
+            };
+          }
+          if (isHovered) {
+            return {
+              color: Color.action.blue.hover,
+            };
+          }
+          return {
+            color: Color.action.blue.filled,
+          };
+        } else if (style === 'SECONDARY') {
+          if (state === 'DISABLED') {
+            return {
+              color: Color.action.gray.disabled,
+            };
+          }
+          if (isActivated) {
+            return {
+              color: Color.action.gray.pressed,
+            };
+          }
+          if (isHovered) {
+            return {
+              color: Color.action.gray.hover,
+            };
+          }
+          return {
+            color: Color.action.gray.filled,
+          };
         }
       })(),
     }),
@@ -515,6 +400,7 @@ export const IconButton = ({
 
   const button = useRef<HTMLButtonElement>(null);
   const { isHovered, isActivated } = useMouseInteraction(button);
+  const { Color } = useStyleContext();
 
   const plusIcon = useMemo(() => {
     const [length, viewbox] = (() => {
@@ -531,9 +417,9 @@ export const IconButton = ({
       if (state === 'DISABLED') {
         return ['black', '0.2'];
       } else if (style === 'OUTLINE') {
-        return [Color.light.text.secondary, '1'];
+        return [Color.text.secondary, '1'];
       } else {
-        return [Color.light.text.white, '1'];
+        return [Color.text.default, '1'];
       }
     })();
 
@@ -593,71 +479,68 @@ export const IconButton = ({
       border: 'none',
       transition: 'background 0.2s, border 0.2s',
       ...(() => {
-        if (isDarkMode) {
-        } else {
-          if (style === 'PRIMARY') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.action.blue.disabled,
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.action.blue.pressed,
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.action.blue.hover,
-                color: 'a',
-              };
-            }
+        if (style === 'PRIMARY') {
+          if (state === 'DISABLED') {
             return {
-              background: Color.light.action.blue.filled,
-            };
-          } else if (style === 'SECONDARY') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.action.gray.disabled,
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.action.gray.pressed,
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.action.gray.hover,
-              };
-            }
-            return {
-              background: Color.light.action.gray.filled,
-            };
-          } else if (style === 'OUTLINE') {
-            if (state === 'DISABLED') {
-              return {
-                background: Color.light.background.gray2,
-                border: `1px solid ${Color.light.stroke.gray1}`,
-              };
-            }
-            if (isActivated) {
-              return {
-                background: Color.light.background.gray2,
-                border: `1px solid ${Color.light.stroke.gray2}`,
-              };
-            }
-            if (isHovered) {
-              return {
-                background: Color.light.background.gray1,
-                border: `1px solid ${Color.light.stroke.gray2}`,
-              };
-            }
-            return {
-              background: 'none',
-              border: `1px solid ${Color.light.stroke.gray2}`,
+              background: Color.action.blue.disabled,
             };
           }
+          if (isActivated) {
+            return {
+              background: Color.action.blue.pressed,
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.action.blue.hover,
+              //color: 'a',
+            };
+          }
+          return {
+            background: Color.action.blue.filled,
+          };
+        } else if (style === 'SECONDARY') {
+          if (state === 'DISABLED') {
+            return {
+              background: Color.action.gray.disabled,
+            };
+          }
+          if (isActivated) {
+            return {
+              background: Color.action.gray.pressed,
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.action.gray.hover,
+            };
+          }
+          return {
+            background: Color.action.gray.filled,
+          };
+        } else if (style === 'OUTLINE') {
+          if (state === 'DISABLED') {
+            return {
+              background: Color.background.gray2,
+              border: `1px solid ${Color.stroke.gray1}`,
+            };
+          }
+          if (isActivated) {
+            return {
+              background: Color.background.gray2,
+              border: `1px solid ${Color.stroke.gray2}`,
+            };
+          }
+          if (isHovered) {
+            return {
+              background: Color.background.gray1,
+              border: `1px solid ${Color.stroke.gray2}`,
+            };
+          }
+          return {
+            background: 'none',
+            border: `1px solid ${Color.stroke.gray2}`,
+          };
         }
       })(),
     }),
@@ -682,7 +565,6 @@ type ToggleButtonProps = {
 
 const ToggleButtonText = styled.span`
   width: fit-content;
-  color: ${Color.light.text.secondary};
   text-align: start;
 `;
 
@@ -690,24 +572,42 @@ const ToggleCircle = styled.div`
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: ${Color.light.background.white};
   transition: all 0.2s;
 `;
 
-const ToggleWrapper = styled.div<{ isActivated: boolean }>`
+const ToggleWrapper = styled.div`
   width: 46px;
   height: 22px;
   border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: 'start';
-  background: ${(props) =>
-    props.isActivated
-      ? Color.light.background.blue1
-      : Color.light.background.gray2};
   padding: 3px;
   box-sizing: border-box;
   margin: 0;
+  transition: all 0.2s;
+`;
+
+const ToggleButtonContainer = styled.div<{
+  Color: ColorType;
+  isActivated: boolean;
+}>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  ${ToggleWrapper} {
+    background: ${(props) =>
+      props.isActivated
+        ? props.Color.background.blue1
+        : props.Color.background.gray2};
+  }
+
   ${(props) =>
     props.isActivated &&
     css`
@@ -715,7 +615,14 @@ const ToggleWrapper = styled.div<{ isActivated: boolean }>`
         transform: translateX(24px);
       }
     `}
-  transition: all 0.2s;
+
+  ${ToggleButtonText} {
+    color: ${(props) => props.Color.text.secondary};
+  }
+
+  ${ToggleCircle} {
+    background: ${(props) => props.Color.background.default};
+  }
 `;
 
 export const ToggleButton = ({
@@ -723,18 +630,11 @@ export const ToggleButton = ({
   isActivated,
   onClick,
 }: ToggleButtonProps) => {
+  const { Color } = useStyleContext();
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
-        width: 'fit-content',
-        cursor: 'pointer',
-        boxSizing: 'border-box',
-      }}
+    <ToggleButtonContainer
+      Color={Color}
+      isActivated={isActivated}
       onClick={onClick}
     >
       {text && !text.isRight ? (
@@ -742,7 +642,7 @@ export const ToggleButton = ({
       ) : (
         <></>
       )}
-      <ToggleWrapper isActivated={isActivated}>
+      <ToggleWrapper>
         <ToggleCircle style={{ ...Shadow.light.shadow1 }}></ToggleCircle>
       </ToggleWrapper>
       {text && text.isRight ? (
@@ -750,6 +650,6 @@ export const ToggleButton = ({
       ) : (
         <></>
       )}
-    </div>
+    </ToggleButtonContainer>
   );
 };

@@ -1,11 +1,16 @@
-import { graphql, useStaticQuery } from 'gatsby';
+// TODO 다크모드 로직 변경
 import React from 'react';
 import styled from 'styled-components';
-import Color from '../styles/Color';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import Font from '../styles/Font';
+import { ColorType } from '../types/Style';
 
 type ButtonSizeType = 'L' | 'S';
-export const CheckBoxField = styled.fieldset<{ size: ButtonSizeType }>`
+
+export const $CheckBoxField = styled.fieldset<{
+  size: ButtonSizeType;
+  Color: ColorType;
+}>`
   label {
     display: flex;
     align-items: center;
@@ -13,17 +18,17 @@ export const CheckBoxField = styled.fieldset<{ size: ButtonSizeType }>`
   }
   [type='checkbox'] {
     appearance: none;
-    border: 0.15em solid ${Color.light.stroke.gray2};
+    border: 0.15em solid ${(props) => props.Color.stroke.gray2};
     ${(props) =>
       props.size === 'L'
         ? `
-                width: 18px;
-                height: 18px;
-                `
+        width: 18px;
+        height: 18px;
+        `
         : `
-                width: 13px;
-                height: 13px;
-            `}
+          width: 13px;
+          height: 13px;
+          `}
     border-radius: 2px;
     margin: 0;
     position: relative;
@@ -31,18 +36,18 @@ export const CheckBoxField = styled.fieldset<{ size: ButtonSizeType }>`
   }
 
   [type='checkbox']:hover {
-    border-color: ${Color.light.stroke.gray3};
+    border-color: ${(props) => props.Color.stroke.gray3};
   }
 
   [type='checkbox']:active {
-    border-color: ${Color.light.stroke.gray4};
+    border-color: ${(props) => props.Color.stroke.gray4};
   }
 
   [type='checkbox']:active {
-    border-color: ${Color.light.stroke.gray4};
+    border-color: ${(props) => props.Color.stroke.gray4};
   }
   [type='checkbox']:disabled {
-    border-color: ${Color.light.stroke.gray1};
+    border-color: ${(props) => props.Color.stroke.gray1};
   }
 
   [type='checkbox']:checked {
@@ -68,6 +73,18 @@ export const CheckBoxField = styled.fieldset<{ size: ButtonSizeType }>`
   }
 `;
 
+export const CheckBoxField = ({
+  children,
+  size,
+}: React.PropsWithChildren & { size: ButtonSizeType }) => {
+  const { Color } = useStyleContext();
+  return (
+    <$CheckBoxField size={size} Color={Color}>
+      {children}
+    </$CheckBoxField>
+  );
+};
+
 type CheckBoxProps = {
   name: string;
   value: string;
@@ -92,6 +109,7 @@ export const CheckBox = ({
   onChange,
   inputRef,
 }: CheckBoxProps) => {
+  const { Color } = useStyleContext();
   return (
     <label>
       <input
@@ -110,7 +128,7 @@ export const CheckBox = ({
             verticalAlign: 'middle',
             textAlign: 'center',
             width: 'fit-content',
-            color: Color.light.text.secondary,
+            color: Color.text.secondary,
           }}
         >
           {label}

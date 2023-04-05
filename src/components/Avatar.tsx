@@ -4,14 +4,15 @@ import Size from '../types/Size';
 import styled from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import Color from '../styles/Color';
+import { ColorType } from '../types/Style';
+import { useStyleContext } from '../contexts/AppContextProvider';
 
 type AvatarProps = {
   size: Size;
   src?: string;
 };
 
-// TODO DarkMode 대응
-const Container = styled.div<{ size: Size; isDarkMode: boolean; src?: string }>`
+const Container = styled.div<{ size: Size; src?: string; Color: ColorType }>`
   ${({ size }) => {
     switch (size) {
       case 'XL':
@@ -27,25 +28,20 @@ const Container = styled.div<{ size: Size; isDarkMode: boolean; src?: string }>`
     }
   }}
 
-  ${({ src, isDarkMode }) => {
+  ${({ src }) => {
     if (src) {
-      console.log(src);
       return `
-                background-image: url(${src});
-                background-repeat: no-repeat;
-                background-position: center;
-                background-size: cover;
-            `;
+        background-image: url(${src});
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+      `;
     } else {
-      return `${
-        isDarkMode ? Color.dark.background.gray1 : Color.light.background.gray1
-      };`;
+      return `${Color.dark.background.gray1};`;
     }
   }}
 
-    border: 1px solid
-        ${({ isDarkMode }) =>
-    isDarkMode ? Color.dark.stroke.gray1 : Color.light.stroke.gray1};
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
 
   display: flex;
   align-items: center;
@@ -53,8 +49,6 @@ const Container = styled.div<{ size: Size; isDarkMode: boolean; src?: string }>`
 `;
 
 const Avatar = ({ size, src }: AvatarProps) => {
-  const { isDarkMode } = useContext(DarkModeContext);
-
   const iconMap = useMemo(
     () => ({
       XL: `
@@ -93,10 +87,12 @@ const Avatar = ({ size, src }: AvatarProps) => {
     []
   );
 
+  const { Color } = useStyleContext();
+
   return (
     <Container
+      Color={Color}
       size={size}
-      isDarkMode={isDarkMode}
       src={src}
       dangerouslySetInnerHTML={{ __html: src ? '' : iconMap[size] }}
     ></Container>

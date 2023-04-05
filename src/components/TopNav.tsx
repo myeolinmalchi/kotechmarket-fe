@@ -10,30 +10,8 @@ import Avatar from './Avatar';
 import { SideNavContext } from '../contexts/SideNavProvider';
 import { UserLoginContext } from '../contexts/UserLoginProvider';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
-
-const Container = styled.nav<{ isDarkMode: boolean }>`
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  z-index: 1000000000;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-
-  background: ${Color.light.background.white};
-  border-bottom: 1px solid ${Color.light.stroke.gray1};
-
-  padding: 0 28px;
-  box-sizing: border-box;
-
-  @media (max-width: 1024px) {
-    height: 64px;
-    padding: 0 16px;
-  }
-`;
+import { ColorType } from '../types/Style';
+import { useStyleContext } from '../contexts/AppContextProvider';
 
 const NotiContainer = styled.div`
   width: 32px;
@@ -44,19 +22,11 @@ const NotiContainer = styled.div`
   position: relative;
 `;
 
-const NotiBadge = styled.span<{ isDarkMode: boolean }>`
+const NotiBadge = styled.span`
   width: 30px;
   height: 30px;
   border-radius: 50%;
 
-  background: ${Color.light.text.blue};
-  color: ${Color.light.text.white};
-  ${(props) =>
-    props.isDarkMode &&
-    css`
-      background: ${Color.light.text.blue};
-      color: ${Color.light.text.white};
-    `}
   position: absolute;
   top: 0px;
   right: 0px;
@@ -98,13 +68,43 @@ const ClearButton = styled.button`
   cursor: pointer;
 `;
 
+const Container = styled.nav<{ Color: ColorType }>`
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1000000000;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+
+  background: ${(props) => props.Color.background.default};
+  border-bottom: 1px solid ${(props) => props.Color.stroke.gray1};
+
+  padding: 0 28px;
+  box-sizing: border-box;
+
+  @media (max-width: 1024px) {
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  ${NotiBadge} {
+    background: ${(props) => props.Color.text.blue};
+    color: ${(props) => props.Color.text.default};
+  }
+`;
+
 export const TopNav = ({ isWritingPage }: TopNavProps) => {
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
   const { toggleSideNav, disabled } = useContext(SideNavContext);
   const { userType } = useContext(UserLoginContext);
   const navigate = useCustomNavigate();
+  const { Color } = useStyleContext();
   return (
-    <Container isDarkMode={isDarkMode}>
+    <Container Color={Color}>
       <Section>
         {!isWritingPage && (
           <ClearButton
@@ -239,7 +239,7 @@ export const TopNav = ({ isWritingPage }: TopNavProps) => {
                   fill="#5D6169"
                 />
               </svg>
-              <NotiBadge isDarkMode={isDarkMode}>{15}</NotiBadge>
+              <NotiBadge>{15}</NotiBadge>
             </NotiContainer>
           </ClearButton>
         )}
@@ -276,7 +276,7 @@ export const TopNav = ({ isWritingPage }: TopNavProps) => {
 };
 
 export const MobileTopNav = () => {
-  const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
+  const { toggleDarkMode } = useContext(DarkModeContext);
   const { disabled, toggleSideNav } = useContext(SideNavContext);
   const [searchBarOpened, setSearchBarOpened] = React.useState(false);
   const searchRef = React.useRef(null);
@@ -284,8 +284,9 @@ export const MobileTopNav = () => {
     setSearchBarOpened(!searchBarOpened);
   };
   const navigate = useCustomNavigate();
+  const { Color } = useStyleContext();
   return (
-    <Container isDarkMode={isDarkMode}>
+    <Container Color={Color}>
       {searchBarOpened && (
         <ClearButton onClick={toggleSearchBar}>
           <svg

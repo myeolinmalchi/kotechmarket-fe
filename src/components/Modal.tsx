@@ -1,9 +1,11 @@
 import React, { useContext, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import styled, { css } from 'styled-components';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import Color from '../styles/Color';
 import Font from '../styles/Font';
+import { ColorType } from '../types/Style';
 import { DefaultButton, TextButton } from './Button';
 
 interface ModalProps {
@@ -39,7 +41,7 @@ const ModalContainer = styled.div<{ visible: boolean }>`
   background: rgb(0, 0, 0, 0.4);
 `;
 
-const ModalWrapper = styled.div<{ isDarkMode: boolean }>`
+const ModalWrapper = styled.div<{ Color: ColorType }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,8 +50,7 @@ const ModalWrapper = styled.div<{ isDarkMode: boolean }>`
   padding: 32px;
   gap: 32px;
   box-sizing: border-box;
-  background: ${(props) =>
-    props.isDarkMode ? '' : Color.light.background.white};
+  background: ${(props) => props.Color.background.default};
   border-radius: 4px;
 `;
 
@@ -110,8 +111,8 @@ const Modal: React.FC<ModalProps> = ({
   visible,
   reverseButtonOrder,
 }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const modalContainerRef = useRef<HTMLDivElement>(null);
+  const { Color } = useStyleContext();
 
   const [zIndex, setZindex] = React.useState(0);
   React.useEffect(() => {
@@ -136,7 +137,7 @@ const Modal: React.FC<ModalProps> = ({
         }
       }}
     >
-      <ModalWrapper isDarkMode={isDarkMode}>
+      <ModalWrapper Color={Color}>
         <ContentArea className={'ModalContentArea'}>
           <Title>{title}</Title>
           {image && <Image src={image} />}
@@ -144,7 +145,7 @@ const Modal: React.FC<ModalProps> = ({
           <Content
             style={{
               ...Font.body.bodyLong1,
-              color: isDarkMode ? '' : Color.light.text.secondary,
+              color: Color.text.secondary,
               textAlign: 'center',
             }}
           >

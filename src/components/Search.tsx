@@ -1,12 +1,12 @@
 import styled, { css } from 'styled-components';
 import React, { useContext } from 'react';
-import Color from '../styles/Color';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import Font from '../styles/Font';
+import { useStyleContext } from '../contexts/AppContextProvider';
+import { ColorType } from '../types/Style';
 
 export const Title = ({ children }: React.PropsWithChildren) => {
-  const { isDarkMode } = useContext(DarkModeContext);
+  const { Color } = useStyleContext();
   const { isDesktop, isMobile } = useContext(MediaQueryContext);
   return (
     <span
@@ -15,7 +15,7 @@ export const Title = ({ children }: React.PropsWithChildren) => {
         padding: isDesktop ? '' : isMobile ? '0 16px' : '0 28px',
         marginTop: isDesktop ? '' : '60px',
         boxSizing: 'border-box',
-        color: isDarkMode ? '' : Color.light.text.primary,
+        color: Color.text.primary,
         width: '100%',
         textAlign: 'start',
         marginBottom: isDesktop ? '48px' : '36px',
@@ -26,9 +26,8 @@ export const Title = ({ children }: React.PropsWithChildren) => {
   );
 };
 
-export const SearchContainer = styled.div<{ isDarkMode: boolean }>`
-  border: 1px solid
-    ${(props) => (props.isDarkMode ? '' : Color.light.stroke.gray1)};
+const $SearchContainer = styled.div<{ Color: ColorType }>`
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
   padding: 16px;
   width: 100%;
   display: flex;
@@ -37,6 +36,7 @@ export const SearchContainer = styled.div<{ isDarkMode: boolean }>`
   gap: 4px;
   margin-bottom: 32px;
   box-sizing: border-box;
+  background: ${(props) => props.Color.background.default};
 
   @media (max-width: 1024px) {
     padding: 0 28px;
@@ -49,7 +49,12 @@ export const SearchContainer = styled.div<{ isDarkMode: boolean }>`
   }
 `;
 
-export const SearchContainer2 = styled.div<{ isDarkMode: boolean }>`
+export const SearchContainer = ({ children }: React.PropsWithChildren) => {
+  const { Color } = useStyleContext();
+  return <$SearchContainer Color={Color}>{children}</$SearchContainer>;
+};
+
+const $SearchContainer2 = styled.div<{ Color: ColorType }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -58,14 +63,8 @@ export const SearchContainer2 = styled.div<{ isDarkMode: boolean }>`
   gap: 12px 8px;
   margin-bottom: 28px;
   box-sizing: border-box;
-  background: ${Color.light.background.white};
-  border: 1px solid ${Color.light.stroke.gray1};
-  ${(props) =>
-    props.isDarkMode &&
-    css`
-      background: ${Color.light.background.gray1};
-      border: 1px solid ${Color.light.stroke.gray1};
-    `}
+  background: ${(props) => props.Color.background.default};
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
   flex-wrap: wrap;
 
   @media (max-width: 1024px) {
@@ -78,3 +77,8 @@ export const SearchContainer2 = styled.div<{ isDarkMode: boolean }>`
     width: calc(100% - 32px);
   }
 `;
+
+export const SearchContainer2 = ({ children }: React.PropsWithChildren) => {
+  const { Color } = useStyleContext();
+  return <$SearchContainer2 Color={Color}>{children}</$SearchContainer2>;
+};

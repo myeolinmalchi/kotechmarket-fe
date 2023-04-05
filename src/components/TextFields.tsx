@@ -1,13 +1,15 @@
 import React, { useContext, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { useStyleContext } from '../contexts/AppContextProvider';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
 import Color from '../styles/Color';
 import Font from '../styles/Font';
+import { ColorType } from '../types/Style';
 
 type Size = 'L' | 'S';
 type State = 'DEFAULT' | 'SUCCESS' | 'ERROR' | 'DISABLED';
 const SearchContainer = styled.div<{
-  isDarkMode: boolean;
+  Color: ColorType;
   state: State;
   size: Size;
 }>`
@@ -16,15 +18,14 @@ const SearchContainer = styled.div<{
   border-radius: 2px;
 
   transition: background 0.2s, border 0.2s;
-  background: ${(props) =>
-    props.isDarkMode ? '' : Color.light.background.gray1};
+  background: ${(props) => props.Color.background.gray1};
   input {
-    color: ${(props) => (props.isDarkMode ? '' : Color.light.text.primary)};
+    color: ${(props) => props.Color.text.primary};
     background: none;
   }
 
   input::placeholder {
-    color: ${(props) => (props.isDarkMode ? '' : Color.light.text.third)};
+    color: ${(props) => props.Color.text.third};
   }
   display: flex;
   box-sizing: border-box;
@@ -33,10 +34,9 @@ const SearchContainer = styled.div<{
   padding: 0 16px;
   gap: 0;
 `;
-const Container = styled.div<{ isDarkMode: boolean; size: Size; state: State }>`
+const Container = styled.div<{ Color: ColorType; size: Size; state: State }>`
   height: ${(props) => (props.size === 'L' ? '52px' : '34px')};
-  border: 1px solid
-    ${(props) => (props.isDarkMode ? '' : Color.light.stroke.gray1)};
+  border: 1px solid ${(props) => props.Color.stroke.gray1};
   border-radius: 2px;
 
   transition: background 0.2s, border 0.2s;
@@ -52,36 +52,36 @@ const Container = styled.div<{ isDarkMode: boolean; size: Size; state: State }>`
     props.state === 'DEFAULT' &&
     css`
       &:hover {
-        border-color: ${props.isDarkMode ? '' : Color.light.stroke.gray2};
+        border-color: ${props.Color.stroke.gray2};
       }
       input:focus + & {
-        border-color: ${props.isDarkMode ? '' : Color.light.stroke.gray2};
+        border-color: ${props.Color.stroke.gray2};
       }
     `}
 
   ${(props) =>
     props.state === 'SUCCESS' &&
     css`
-      border-color: ${props.isDarkMode ? '' : Color.light.stroke.blue1};
+      border-color: ${props.Color.stroke.blue1};
     `}
 
     ${(props) =>
     props.state === 'ERROR' &&
     css`
-      border-color: ${props.isDarkMode ? '' : Color.light.stroke.red1};
+      border-color: ${props.Color.stroke.red1};
     `}
 
     ${(props) =>
     props.state === 'DISABLED' &&
     css`
       & {
-        background: ${props.isDarkMode ? '' : Color.light.background.gray2};
+        background: ${props.Color.background.gray2};
       }
       input {
         corsor: not-allowed;
-        background: ${props.isDarkMode ? '' : Color.light.background.gray2};
+        background: ${props.Color.background.gray2};
       }
-      border-color: ${props.isDarkMode ? '' : Color.light.stroke.gray2};
+      border-color: ${props.Color.stroke.gray2};
     `}
 
     display: flex;
@@ -146,12 +146,13 @@ export const TextField = ({
       }
     }, 100);
   };
+  const { Color } = useStyleContext();
 
   return (
     <Container
+      Color={Color}
       size={size}
       state={state}
-      isDarkMode={isDarkMode}
       style={{
         width: width,
       }}
@@ -254,7 +255,6 @@ export const TextFieldCount = ({
   width,
   inputRef,
 }: TextFieldType & { maxCount: number }) => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const [count, setCount] = useState(0);
   const [value, setValue] = useState('');
   const keyUpHandler = (e: React.FormEvent<HTMLInputElement>) => {
@@ -265,14 +265,15 @@ export const TextFieldCount = ({
       setCount(e.currentTarget.value.length);
     }
   };
+  const { Color } = useStyleContext();
   return (
     <Container
       size={size}
       state={state}
-      isDarkMode={isDarkMode}
       style={{
         width: width,
       }}
+      Color={Color}
     >
       <ClearInput
         disabled={state === 'DISABLED'}
@@ -329,24 +330,26 @@ export const SearchField = ({
       inputRef.current.focus();
     }
   }, []);
+
+  const { Color } = useStyleContext();
   return (
     <SearchContainer
+      Color={Color}
       size={size}
       state={state}
-      isDarkMode={isDarkMode}
       style={{
         background: focus
-          ? Color.light.background.white
+          ? Color.background.default
           : inputRef?.current && inputRef.current?.value !== ''
-          ? Color.light.background.white
-          : Color.light.background.gray1,
+          ? Color.background.default
+          : Color.background.gray1,
         width: width,
         border: `1px solid ${
           focus
-            ? Color.light.stroke.gray2
+            ? Color.stroke.gray2
             : inputRef?.current && inputRef.current?.value !== ''
-            ? Color.light.stroke.gray2
-            : Color.light.background.gray1
+            ? Color.stroke.gray2
+            : Color.background.gray1
         }`,
       }}
     >

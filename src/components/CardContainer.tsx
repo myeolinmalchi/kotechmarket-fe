@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import Color from '../styles/Color';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import Font from '../styles/Font';
+import { useStyleContext } from '../contexts/AppContextProvider';
 
 export const CardContainer = styled.div`
   width: 100%;
@@ -27,15 +26,15 @@ export const CardContainer = styled.div`
 `;
 
 export const CardSectionTitle = ({ children }: React.PropsWithChildren) => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const { isDesktop, isMobile } = useContext(MediaQueryContext);
+  const { Color } = useStyleContext();
   return (
     <span
       style={{
         ...(isDesktop ? Font.title.display1 : Font.title.headline),
         boxSizing: 'border-box',
         padding: isDesktop ? '' : isMobile ? '0 16px' : '0 28px',
-        color: isDarkMode ? '' : Color.light.text.primary,
+        color: Color.text.primary,
         width: '100%',
         textAlign: 'start',
         marginBottom: '28px',
