@@ -43,12 +43,15 @@ function withPageLoadedEffect<P extends Record<string, unknown>>(
 
     React.useEffect(() => {
       typeof window !== 'undefined' &&
+        isDesktop &&
         window.addEventListener('popstate', handleBackButton);
       return () => {
         typeof window !== 'undefined' &&
+          isDesktop &&
           window.removeEventListener('popstate', handleBackButton);
       };
     }, [urlStack]);
+
     return <WrappedComponent {...props} />;
   };
 }
