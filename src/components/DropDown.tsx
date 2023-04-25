@@ -214,18 +214,26 @@ export const DropDownHeader = ({
   );
 };
 
-type DropDownProps = Omit<
-  HeaderProps & ContentsProps,
-  'label' | 'isSelected'
-> & { width: string; placeholder?: string };
+type DropDownStates = {
+  isOpened: boolean;
+  selected: number;
+  onClickUnit: (idx: number) => () => void;
+  onClick: () => void;
+};
+
+type DropDownProps = {
+  contents: { label: string; value: string }[];
+  states: DropDownStates;
+  type: 'DEFAULT' | 'CLEAR';
+  width: string;
+  placeholder?: string;
+  size: 'S' | 'L';
+};
 
 export const DropDown = ({
   contents,
   type,
-  isOpened,
-  selected,
-  onClickUnit,
-  onClick,
+  states: { isOpened, selected, onClick, onClickUnit },
   width,
   placeholder,
   size,

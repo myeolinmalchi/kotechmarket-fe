@@ -10,8 +10,9 @@ import {
   NavigationContextProvider,
 } from './NavigatingContext';
 import { URLContext, URLProvider } from './URLContextProvider';
-import ModalProvider, { ModalContext } from './ModalPrivider';
+import ModalProvider, { ModalContext } from './ModalProvider';
 import StyleProvider, { StyleContext } from './StyleProvider';
+import ShareModalProvider, { ShareModalContext } from './ShareModalProvider';
 
 const providers = [
   DarkModeProvider,
@@ -23,6 +24,7 @@ const providers = [
   NavigationContextProvider,
   URLProvider,
   ModalProvider,
+  ShareModalProvider,
 ];
 
 const AppContextProvider = combineComponents(...providers);
@@ -36,5 +38,6 @@ export const useToastContext = () => React.useContext(ToastContext);
 export const useNavigationContext = () => React.useContext(NavigationContext);
 export const useURLContext = () => React.useContext(URLContext);
 export const useModalContext = () => React.useContext(ModalContext);
+export const useShareModalContext = () => React.useContext(ShareModalContext);
 
 export default AppContextProvider;

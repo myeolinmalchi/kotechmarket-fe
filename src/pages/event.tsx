@@ -1,72 +1,28 @@
 import React from 'react';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { DefaultButton } from '../components/Button';
 import { DropDown } from '../components/DropDown';
 import { TextField } from '../components/TextFields';
-import { SpCard } from '../components/Card';
+import { EventCard } from '../components/Card';
 import { Pagination } from '../components/Pagination';
-import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import withPageLoadedEffect from '../hocs/withPageLoadedEffect';
 import { SearchContainer2, Title } from '../components/Search';
 import { CardContainer } from '../components/CardContainer';
 import { useDropDown } from '../hooks/useDropDown';
+import { useMediaQueryContext } from '../contexts/AppContextProvider';
 
-const support = () => {
+const event = () => {
   const [contents, setContents] = useState(new Array(16).fill(0));
 
   const stateStates = useDropDown();
-  const categoryStates = useDropDown();
+  const sortbyStates = useDropDown();
 
-  const { isDesktop } = useContext(MediaQueryContext);
+  const { isDesktop } = useMediaQueryContext();
+
   return (
     <>
-      <Title>지원사업</Title>
+      <Title>행사</Title>
       <SearchContainer2>
-        <DropDown
-          size={'S'}
-          contents={[
-            {
-              label: '전체',
-              value: '0',
-            },
-            {
-              label: '금융',
-              value: '0',
-            },
-            {
-              label: '기술',
-              value: '0',
-            },
-            {
-              label: '인력',
-              value: '0',
-            },
-            {
-              label: '수출',
-              value: '0',
-            },
-            {
-              label: '내수',
-              value: '0',
-            },
-            {
-              label: '창업',
-              value: '0',
-            },
-            {
-              label: '경영',
-              value: '0',
-            },
-            {
-              label: '기타',
-              value: '0',
-            },
-          ]}
-          type={'DEFAULT'}
-          width={isDesktop ? '120px' : 'calc(50% - 4px)'}
-          placeholder={'카테고리'}
-          states={categoryStates}
-        />
         <DropDown
           size={'S'}
           contents={[
@@ -84,9 +40,30 @@ const support = () => {
             },
           ]}
           type={'DEFAULT'}
+          states={stateStates}
           width={isDesktop ? '120px' : 'calc(50% - 4px)'}
           placeholder={'상태'}
-          states={stateStates}
+        />
+        <DropDown
+          size={'S'}
+          contents={[
+            {
+              label: '전체',
+              value: '0',
+            },
+            {
+              label: '최신순',
+              value: '0',
+            },
+            {
+              label: '인기순',
+              value: '0',
+            },
+          ]}
+          type={'DEFAULT'}
+          states={sortbyStates}
+          width={isDesktop ? '120px' : 'calc(50% - 4px)'}
+          placeholder={'정렬 기준'}
         />
         <TextField
           state={'DEFAULT'}
@@ -108,19 +85,24 @@ const support = () => {
         />
       </SearchContainer2>
       <CardContainer>
-        {contents.map(() => (
-          <SpCard
-            isProceeding={true}
+        {contents.map((_, idx) => (
+          <EventCard
+            id={idx}
+            date={new Date()}
             src={
-              'http://www.thefirstmedia.net/news/photo/202108/80255_62324_611.jpg'
+              'https://www.namutech.co.kr/wp-content/uploads/2020/03/main-section-002.jpg'
             }
             marked={false}
             width={isDesktop ? 'calc(25% - 15px)' : 'calc(50% - 8px)'}
-            title={'저는 지원사업 카드입니다.'}
-            dday={300}
+            title={'안녕하세요 행사카드입니다.'}
             isMobile={!isDesktop}
-            category={'카테고리'}
-            id={1}
+            preInfo={{
+              date: new Date(),
+              isOffline: true,
+            }}
+            author={{
+              name: 'Name',
+            }}
           />
         ))}
       </CardContainer>
@@ -142,4 +124,4 @@ const support = () => {
   );
 };
 
-export default withPageLoadedEffect(support);
+export default withPageLoadedEffect(event);

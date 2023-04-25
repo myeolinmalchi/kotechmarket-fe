@@ -11,6 +11,7 @@ const CarouselContainer = styled.div`
   width: 100%;
   height: 360px;
   overflow: hidden;
+  border-radius: 4px;
   @media (max-width: 600px) {
     height: 210px;
   }

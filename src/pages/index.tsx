@@ -14,7 +14,6 @@ import {
 import ImageCarousel from '../components/index/ImageCarousel';
 import ChannelCarousel from '../components/index/ChannelCarousel';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
-import { navigate } from 'gatsby';
 import { MediaQueryContext } from '../contexts/MediaQueryProvider';
 import { ToastContext } from '../contexts/ToastProvider';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
@@ -253,6 +252,7 @@ const index = () => {
         <CardContainer>
           {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <EventCard
+              id={1}
               src={
                 'https://www.namutech.co.kr/wp-content/uploads/2020/03/main-section-002.jpg'
               }
@@ -307,6 +307,7 @@ const index = () => {
         <CardContainer>
           {new Array(isTablet ? 9 : 8).fill(0).map(() => (
             <SpCard
+              id={1}
               isProceeding={true}
               src={
                 'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201506/15/htm_20150615180939534.jpg'
@@ -353,6 +354,7 @@ const index = () => {
         <CardContainer>
           {new Array(isTablet ? 3 : 4).fill(0).map(() => (
             <NewsCard
+              id={1}
               src={
                 'https://img.freepik.com/premium-photo/innovation-technology-for-business-finance-background_31965-2378.jpg'
               }

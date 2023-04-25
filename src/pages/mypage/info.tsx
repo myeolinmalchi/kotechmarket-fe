@@ -10,7 +10,7 @@ import Modal from '../../components/Modal';
 import { TextField } from '../../components/TextFields';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
-import ModalProvider, { ModalContext } from '../../contexts/ModalPrivider';
+import ModalProvider, { ModalContext } from '../../contexts/ModalProvider';
 import { ToastContext } from '../../contexts/ToastProvider';
 import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
 import { useCustomNavigate } from '../../hooks/useCustomNavigate';
@@ -534,17 +534,12 @@ const info = () => {
         </InputContainer>
         <CheckBoxField
           size={'S'}
-          style={{
-            display: 'flex',
-            alignItems: 'start',
-            justifyContent: 'center',
-            width: '100%',
-            flexDirection: 'column',
-            gap: '8px',
-            marginTop: '20px',
-            //padding: isDesktop ? '' : '0 16px',
-            boxSizing: 'border-box',
-          }}
+          style={
+            {
+              marginTop: '20px',
+              //padding: isDesktop ? '' : '0 16px',
+            } as React.StyleHTMLAttributes<any>
+          }
         >
           <CheckBox
             name={'email_consent'}

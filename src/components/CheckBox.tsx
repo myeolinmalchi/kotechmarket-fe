@@ -73,26 +73,47 @@ export const $CheckBoxField = styled.fieldset<{
   }
 `;
 
+/**
+ *
+ **/
 export const CheckBoxField = ({
   children,
   size,
-}: React.PropsWithChildren & { size: ButtonSizeType }) => {
+  style,
+}: React.PropsWithChildren & {
+  size: ButtonSizeType;
+  style?: React.StyleHTMLAttributes<any>;
+}) => {
   const { Color } = useStyleContext();
   return (
-    <$CheckBoxField size={size} Color={Color}>
+    <$CheckBoxField
+      size={size}
+      Color={Color}
+      style={{
+        marginTop: '20px',
+        display: 'flex',
+        alignItems: 'start',
+        justifyContent: 'center',
+        width: '100%',
+        flexDirection: 'column',
+        gap: '8px',
+        boxSizing: 'border-box',
+        ...style,
+      }}
+    >
       {children}
     </$CheckBoxField>
   );
 };
 
 type CheckBoxProps = {
-  name: string;
-  value: string;
+  name?: string;
+  value?: string;
   checked?: boolean;
   label?: string;
   disabled?: boolean;
   inputRef?:
-    | React.RefObject<HTMLInputElement>
+    | React.MutableRefObject<HTMLInputElement>
     | ((el: HTMLInputElement) => void);
   size: ButtonSizeType;
   onChange: React.ChangeEventHandler<HTMLInputElement>;

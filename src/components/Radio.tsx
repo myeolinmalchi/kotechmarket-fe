@@ -7,6 +7,13 @@ import { ColorType } from '../types/Style';
 type ButtonSizeType = 'L' | 'S';
 
 const $RadioField = styled.fieldset<{ size: ButtonSizeType; Color: ColorType }>`
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+  gap: 8px;
+
   label {
     display: flex;
     align-items: center;
@@ -111,8 +118,8 @@ export const RadioField = ({
 };
 
 type RadioButtonProps = {
-  name: string;
-  value: string;
+  name?: string;
+  value?: string;
   checked?: boolean;
   label: string;
   disabled?: boolean;

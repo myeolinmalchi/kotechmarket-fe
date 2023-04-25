@@ -8,7 +8,7 @@ import { Container } from '../../components/account/Container';
 import { Title } from '../../components/account/Text';
 import { useCustomNavigate } from '../../hooks/useCustomNavigate';
 import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
-import { ModalContext } from '../../contexts/ModalPrivider';
+import { ModalContext } from '../../contexts/ModalProvider';
 
 const login = () => {
   const { isDarkMode } = useContext(DarkModeContext);

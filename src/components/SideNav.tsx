@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// TODO: SVG 파일 별도로 분리
+import React, { useEffect, useMemo, useState } from 'react';
 import { useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { DarkModeContext } from '../contexts/DarkModeProvider';
@@ -207,7 +208,7 @@ export const SideNav = () => {
   const { isOpened, disabled, setDisabled, setIsOpened } =
     useContext(SideNavContext);
   const { userType } = useContext(UserLoginContext);
-  const { isDesktop, isMobile, isTablet } = useContext(MediaQueryContext);
+  const { isDesktop } = useContext(MediaQueryContext);
   const [myPageOpened, setMyPageOpened] = useState(false);
   const [channelOpened, setChannelOpened] = useState(false);
   const [contentsOpened, setContentsOpened] = useState(false);
@@ -216,6 +217,8 @@ export const SideNav = () => {
   const [supportSelected, setSupportSelected] = useState(false);
   const [sctownSelected, setSctownSelected] = useState(false);
   const [myPageSelected, setMyPageSelected] = useState(false);
+  const [eventSelected, setEventSelected] = useState(false);
+  const [newsSelected, setNewsSelected] = useState(false);
 
   const [visibleViewportHeight, setVisibleViewportHeight] = useState<number>(0);
 
@@ -231,10 +234,13 @@ export const SideNav = () => {
     setVisibleViewportHeight((_) => getVisibleViewportHeight());
   }, []);
 
+  // TODO: 현재 페이지 강조표시 하는 로직 개선 필요
   const resetSelected = () => {
     setSupportSelected(false);
     setSctownSelected(false);
     setMyPageSelected(false);
+    setEventSelected(false);
+    setNewsSelected(false);
   };
 
   const currentLocation = useLocation();
@@ -255,6 +261,10 @@ export const SideNav = () => {
       setSctownSelected(true);
     } else if (path.startsWith('/mypage')) {
       setMyPageSelected(true);
+    } else if (path.startsWith('/event')) {
+      setEventSelected(true);
+    } else if (path.startsWith('/news')) {
+      setNewsSelected(true);
     }
   }, [currentLocation.pathname]);
 
@@ -384,7 +394,12 @@ export const SideNav = () => {
             </>
           )}
         </ListUnit>
-        <ListUnit isSelected={false} isOpened={isOpened}>
+        <ListUnit
+          isOpened={isOpened}
+          isSelected={false}
+          currentPage={eventSelected}
+          onClick={() => navigate('/event')}
+        >
           <svg
             width="24"
             height="24"
@@ -545,7 +560,12 @@ export const SideNav = () => {
             </>
           )}
         </ListUnit>
-        <ListUnit isSelected={false} isOpened={isOpened}>
+        <ListUnit
+          isSelected={false}
+          isOpened={isOpened}
+          currentPage={newsSelected}
+          onClick={() => navigate('/news')}
+        >
           <svg
             width="24"
             height="24"

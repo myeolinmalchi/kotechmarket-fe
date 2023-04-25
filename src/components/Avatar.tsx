@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import Size from '../types/Size';
 import styled from 'styled-components';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
 import Color from '../styles/Color';
 import { ColorType } from '../types/Style';
 import { useStyleContext } from '../contexts/AppContextProvider';

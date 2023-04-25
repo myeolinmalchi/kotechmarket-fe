@@ -1,9 +1,7 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import QRCode from 'react-qr-code';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useStyleContext } from '../contexts/AppContextProvider';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
-import Color from '../styles/Color';
 import Font from '../styles/Font';
 import { ColorType } from '../types/Style';
 import { DefaultButton, TextButton } from './Button';
@@ -32,7 +30,6 @@ const ModalContainer = styled.div<{ visible: boolean }>`
   top: 0px;
   display: flex;
   opacity: ${(props) => (props.visible ? '1' : '0')};
-  z-index: ${(props) => (props.visible ? '1000000000' : '0')};
   transition: opacity 0.2s;
   align-items: center;
   justify-content: center;
@@ -124,6 +121,7 @@ const Modal: React.FC<ModalProps> = ({
       setZindex(1000000000);
     }
   }, [visible]);
+
   return (
     <ModalContainer
       ref={modalContainerRef}

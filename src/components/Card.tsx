@@ -1,13 +1,9 @@
 // TODO 다크모드 로직 변경
-
 import * as React from 'react';
-import { useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { useStyleContext } from '../contexts/AppContextProvider';
-import { DarkModeContext } from '../contexts/DarkModeProvider';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { useHorizontalScroll } from '../hooks/useHorizontalScroll';
-import Color from '../styles/Color';
 import Font from '../styles/Font';
 import { ColorType } from '../types/Style';
 import Avatar from './Avatar';
@@ -371,6 +367,7 @@ export const NewsCard = ({
   width,
   isMobile,
   category,
+  id,
 }: {
   src?: string;
   title: string;
@@ -384,11 +381,16 @@ export const NewsCard = ({
   width: string;
   isMobile: boolean;
   category?: string;
+  id: number;
 }) => {
   const navigate = useCustomNavigate();
   const { Color } = useStyleContext();
   return (
-    <CardContainer width={width} isMobile={isMobile}>
+    <CardContainer
+      width={width}
+      isMobile={isMobile}
+      onClick={() => navigate(`/news/detail?id=${id}`)}
+    >
       <ImageBox src={src} marked={marked} />
       <div
         style={{
@@ -417,6 +419,7 @@ export const NewsCard = ({
   );
 };
 
+// TODO 카테고리 추가
 export const EventCard = ({
   src,
   marked,
@@ -426,6 +429,7 @@ export const EventCard = ({
   preInfo,
   width,
   isMobile,
+  id,
 }: {
   src?: string;
   title: string;
@@ -441,10 +445,16 @@ export const EventCard = ({
   };
   width: string;
   isMobile: boolean;
+  id: number;
 }) => {
   const { Color } = useStyleContext();
+  const navigate = useCustomNavigate();
   return (
-    <CardContainer width={width} isMobile={isMobile}>
+    <CardContainer
+      width={width}
+      isMobile={isMobile}
+      onClick={() => navigate(`/event/detail?id=${id}`)}
+    >
       <ImageBox src={src} marked={marked} />
       <div
         style={{
@@ -491,6 +501,7 @@ export const SpCard = ({
   isMobile,
   category,
   isProceeding,
+  id,
 }: {
   src?: string;
   marked: boolean;
@@ -500,6 +511,7 @@ export const SpCard = ({
   isMobile: boolean;
   category: string;
   isProceeding: boolean;
+  id: number;
 }) => {
   const { Color } = useStyleContext();
   const navigate = useCustomNavigate();
@@ -508,7 +520,7 @@ export const SpCard = ({
       <ImageBox
         src={src}
         marked={marked}
-        onClick={() => navigate('/support/detail?id=3')}
+        onClick={() => navigate(`/support/detail?id=${id}`)}
       />
       <div
         style={{

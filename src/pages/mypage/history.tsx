@@ -11,7 +11,7 @@ import {
 } from '../../components/Card';
 import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
 import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
-import { ModalContext } from '../../contexts/ModalPrivider';
+import { ModalContext } from '../../contexts/ModalProvider';
 import { SearchContainer, Title } from '../../components/Search';
 import {
   CardContainer,

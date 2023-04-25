@@ -140,6 +140,7 @@ const OrganizationModalTableContainer = styled.div<{ isDarkMode: boolean }>`
   }
 `;
 
+// TODO: 소속 검색 모달 밖으로 빼야함
 const FindOrgModal = ({
   isOpened,
   closeModal,
@@ -304,17 +305,27 @@ const join = () => {
   const [currentSearchOrgKeyword, setCurrentSearchOrgKeyword] = useState('');
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   useEffect(() => {
+    /*
+    const body = {
+      page: 0,
+      size: 10,
+      sort: [],
+    };
+
+    const queryParams = new URLSearchParams(JSON.stringify(body)).toString();
+    
     (async () => {
       const res = await fetch(
-        `${API_URL}/api/v1/members/organizations?${
+        `${API_URL}/public/api/v1/members/organizations?${queryParams}${
           currentSearchOrgKeyword === ''
             ? ''
-            : `search=${currentSearchOrgKeyword}`
+            : `&search=${currentSearchOrgKeyword}`
         }`
       );
       const data: Organization[] = await res.json();
       setOrganizations(data);
     })();
+     */
   }, [currentSearchOrgKeyword]);
 
   const { isDesktop } = useContext(MediaQueryContext);
@@ -347,7 +358,7 @@ const join = () => {
   }, [selectedOrg]);
   /* Org Modal 관련 변수 및 함수*/
 
-  /* 회원과입 Form 관련 변수 및 함수*/
+  /* 회원과입 Form 관련 변수 및 함수 */
   /** 0: 입력값 없음 1: 형식이 올바르지 않음 2: 중복된 이메일 3: 가능한 값 */
   const [emailState, setEmailState] = useState<0 | 1 | 2 | 3>(0);
 
@@ -391,7 +402,9 @@ const join = () => {
    */
   const checkDuplicateEmail = useCallback(
     async (email: string): Promise<boolean> => {
-      const res = await fetch(`${API_URL}/api/v1/duplicate?email=${email}`);
+      const res = await fetch(
+        `${API_URL}/public/api/v1/members/duplicate?email=${email}`
+      );
       const { isUnique }: { isUnique: boolean } = await res.json();
       return !isUnique;
     },
@@ -881,18 +894,20 @@ const join = () => {
       </InputContainer>
       <CheckBoxField
         size={'S'}
-        style={{
-          display: 'flex',
-          alignItems: 'start',
-          justifyContent: 'center',
-          width: 'min(100%, 420px)',
-          flexDirection: 'column',
-          gap: '8px',
-          marginTop: '20px',
-          marginBottom: '36px',
-          padding: isDesktop ? '' : '0 16px',
-          boxSizing: 'border-box',
-        }}
+        style={
+          {
+            display: 'flex',
+            alignItems: 'start',
+            justifyContent: 'center',
+            width: 'min(100%, 420px)',
+            flexDirection: 'column',
+            gap: '8px',
+            marginTop: '20px',
+            marginBottom: '36px',
+            padding: isDesktop ? '' : '0 16px',
+            boxSizing: 'border-box',
+          } as React.StyleHTMLAttributes<any>
+        }
       >
         <CheckBox
           name={'email_consent'}
@@ -912,13 +927,7 @@ const join = () => {
           label={'[선택] 한국기술마켓의 뉴스레터 발송에 동의합니까?'}
           value={'newsletter_consent'}
           size={'S'}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setNewsLetterConsent(true);
-            } else {
-              setNewsLetterConsent(false);
-            }
-          }}
+          onChange={(e) => setNewsLetterConsent(e.target.checked)}
         />
       </CheckBoxField>
       <DefaultButton

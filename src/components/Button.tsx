@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useContext, useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { useStyleContext } from '../contexts/AppContextProvider';

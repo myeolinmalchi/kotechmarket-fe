@@ -9,7 +9,11 @@ import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
 import { Toast } from '../../components/Toast';
 import { NavigationContext } from '../../contexts/NavigatingContext';
 import Modal from '../Modal';
-import { ModalContext } from '../../contexts/ModalPrivider';
+import {
+  useModalContext,
+  useShareModalContext,
+} from '../../contexts/AppContextProvider';
+import ShareModal from '../ShareModal';
 
 const Container = styled.div`
   display: flex;
@@ -122,7 +126,13 @@ const Layout = ({ children }: PropsWithChildren) => {
     setIsLoaded(true);
   }, []);
 
-  const { value } = useContext(ModalContext);
+  const { value, openModal, closeModal } = useModalContext();
+  const shareModal = useShareModalContext();
+
+  const getLocation = () => {
+    const isBrowser = () => typeof window !== 'undefined';
+    return isBrowser() && location.href;
+  };
 
   return (
     <>
@@ -189,6 +199,59 @@ const Layout = ({ children }: PropsWithChildren) => {
           {isDesktop && <TopNav isWritingPage={false} />}
           {(isMobile || isTablet) && <MobileTopNav />}
           <Modal {...value} />
+
+          {/* TODO: 상세페이지별로 id값 받아오는거 처리 */}
+          <ShareModal
+            isOpened={shareModal.visible}
+            closeModal={shareModal.closeModal}
+            openQRCodeModal={() =>
+              openModal({
+                title: 'QR코드가 생성되었습니다.',
+                content: '상단 QR코드를 확인해보세요.',
+                qrvalue: `${getLocation()}`,
+                buttonType: 1,
+                primaryButtonLabel: '이미지 저장하기',
+                closeModal,
+                visible: value.visible,
+                onPrimaryButtonClick: () => {
+                  const $svg =
+                    document.querySelector('.ModalContentArea > svg') ??
+                    new HTMLElement();
+                  //window.URL.revokeObjectURL(canvas.toDataURL());
+                  const source = new XMLSerializer().serializeToString(
+                    $svg as Node
+                  );
+                  const blob = new Blob([source], {
+                    type: 'image/svg+xml;charset=utf-8',
+                  });
+
+                  const $canvas = document.createElement('canvas');
+
+                  const { width, height } = $svg.getBoundingClientRect();
+
+                  $canvas.width = width;
+                  $canvas.height = height;
+
+                  const ctx = $canvas.getContext('2d');
+
+                  const img = new Image();
+
+                  img.onload = (e) => {
+                    ctx?.drawImage(e.target as CanvasImageSource, 0, 0);
+
+                    const $link = document.createElement('a');
+
+                    $link.download = 'QRCode.png';
+                    $link.href = $canvas.toDataURL('image/png');
+
+                    $link.click();
+                  };
+
+                  img.src = URL.createObjectURL(blob);
+                },
+              })
+            }
+          />
           <ContentWrapper isOpened={isOpened} disabled={disabled}>
             <SideNavArea>
               <SideNav />
