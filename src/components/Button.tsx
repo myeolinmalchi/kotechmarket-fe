@@ -14,10 +14,10 @@ type ButtonSize = 'SS' | 'S' | 'M' | 'L' | 'XL';
 type ButtonType = 'NONE' | 'LEFT' | 'RIGHT' | 'UNDERLINE';
 
 interface ButtonProps {
-  style: ButtonStyle;
-  state: ButtonState;
-  size: ButtonSize;
-  type: ButtonType;
+  style?: ButtonStyle;
+  state?: ButtonState;
+  size?: ButtonSize;
+  type?: ButtonType;
   onClick?: (e: React.MouseEvent) => void;
   width?: string;
   text?: string;
@@ -26,10 +26,10 @@ interface ButtonProps {
 }
 
 export const DefaultButton = ({
-  style,
-  state,
-  size,
-  type,
+  style = 'PRIMARY',
+  state = 'DEFAULT',
+  size = 'M',
+  type = 'NONE',
   onClick,
   width,
   text,

@@ -17,6 +17,7 @@ import {
   CardContainer,
   CardSectionTitle,
 } from '../../components/CardContainer';
+import { useDropDown } from '../../hooks/useDropDown';
 
 const stored = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -43,14 +44,15 @@ const stored = () => {
     });
   }, []);
 
+  const categoryState = useDropDown();
+
   return (
     <>
       <Title>보관함</Title>
-      <SearchContainer isDarkMode={isDarkMode}>
+      <SearchContainer>
         <DropDown
           width={isDesktop ? '120px' : '84px'}
           size={'S'}
-          isOpened={categoryOpened}
           type="DEFAULT"
           contents={[
             {
@@ -70,14 +72,7 @@ const stored = () => {
               value: '',
             },
           ]}
-          selected={selectedCategory}
-          onClickUnit={(idx: number) => () => {
-            setSelectecCategory(idx);
-            setCategoryOpened(false);
-          }}
-          onClick={() => {
-            setCategoryOpened(!categoryOpened);
-          }}
+          states={categoryState}
           placeholder={'전체'}
         />
         <TextField
@@ -137,6 +132,7 @@ const stored = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <EventCard
+              id={0}
               width={
                 isDesktop
                   ? 'calc(25% - 15px)'
@@ -168,6 +164,7 @@ const stored = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <SpCard
+              id={0}
               isProceeding={true}
               src={
                 'http://www.thefirstmedia.net/news/photo/202108/80255_62324_611.jpg'
@@ -197,6 +194,7 @@ const stored = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <NewsCard
+              id={0}
               category={'카테고리'}
               width={
                 isDesktop

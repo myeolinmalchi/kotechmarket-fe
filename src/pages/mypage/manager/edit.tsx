@@ -7,6 +7,7 @@ import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
 import Color from '../../../styles/Color';
 import Font from '../../../styles/Font';
 import { DefaultButton, TextButton } from '../../../components/Button';
+import { useDropDown } from '../../../hooks/useDropDown';
 
 const SubTitle = styled.span`
   width: 100%;
@@ -101,6 +102,8 @@ const edit = () => {
 
   const [workStatusDropdownOpened, setWorkStatusDropdownOpened] =
     React.useState(false);
+
+  const stateState = useDropDown();
 
   return (
     <>
@@ -366,17 +369,9 @@ const edit = () => {
             </span>
             <DropDown
               width={'100%'}
-              onClickUnit={(idx: number) => () => {
-                setWorkStatus(idx);
-                setWorkStatusDropdownOpened(false);
-              }}
-              onClick={() =>
-                setWorkStatusDropdownOpened(!workStatusDropdownOpened)
-              }
-              selected={workStatus}
               type={'DEFAULT'}
               size={'L'}
-              isOpened={workStatusDropdownOpened}
+              states={stateState}
               contents={[
                 {
                   label: '근무중',

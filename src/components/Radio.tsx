@@ -1,17 +1,30 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useStyleContext } from '../contexts/AppContextProvider';
 import Font from '../styles/Font';
 import { ColorType } from '../types/Style';
 
 type ButtonSizeType = 'L' | 'S';
 
-const $RadioField = styled.fieldset<{ size: ButtonSizeType; Color: ColorType }>`
+const $RadioField = styled.fieldset<{
+  size: ButtonSizeType;
+  Color: ColorType;
+  isRow?: boolean;
+}>`
   display: flex;
-  align-items: start;
-  justify-content: center;
   width: 100%;
-  flex-direction: column;
+  flex-direction: ${(props) => (props.isRow ? 'row' : 'column')};
+
+  ${(props) =>
+    props.isRow
+      ? css`
+          align-items: center;
+          justify-content: start;
+        `
+      : css`
+          align-items: start;
+          justify-content: center;
+        `}
   gap: 8px;
 
   label {
@@ -108,10 +121,11 @@ const $RadioField = styled.fieldset<{ size: ButtonSizeType; Color: ColorType }>`
 export const RadioField = ({
   children,
   size,
-}: React.PropsWithChildren & { size: ButtonSizeType }) => {
+  isRow,
+}: React.PropsWithChildren & { size: ButtonSizeType; isRow?: boolean }) => {
   const { Color } = useStyleContext();
   return (
-    <$RadioField size={size} Color={Color}>
+    <$RadioField size={size} Color={Color} isRow={isRow}>
       {children}
     </$RadioField>
   );

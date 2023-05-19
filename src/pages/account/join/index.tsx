@@ -5,19 +5,19 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { API_URL } from '../../../config';
-import Font from '../../styles/Font';
-import { DarkModeContext } from '../../contexts/DarkModeProvider';
-import Color from '../../styles/Color';
-import { TextField } from '../../components/TextFields';
+import { API_URL } from '../../../../config';
+import Font from '../../../styles/Font';
+import { DarkModeContext } from '../../../contexts/DarkModeProvider';
+import Color from '../../../styles/Color';
+import { TextField } from '../../../components/TextFields';
 import styled from 'styled-components';
-import { CheckBox, CheckBoxField } from '../../components/CheckBox';
-import { DefaultButton } from '../../components/Button';
-import { Title } from '../../components/account/Text';
-import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
-import { JoinRequestDTO, Organization } from '../../types/account/Join';
-import { useCustomNavigate } from '../../hooks/useCustomNavigate';
-import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { CheckBox, CheckBoxField } from '../../../components/CheckBox';
+import { DefaultButton } from '../../../components/Button';
+import { Title } from '../../../components/account/Text';
+import { MediaQueryContext } from '../../../contexts/MediaQueryProvider';
+import { JoinRequestDTO, Organization } from '../../../types/account/Join';
+import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
+import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
 
 const InputContainer = styled.div`
   display: flex;

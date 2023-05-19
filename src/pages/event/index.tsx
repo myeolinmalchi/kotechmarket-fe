@@ -1,15 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
-import { DefaultButton } from '../components/Button';
-import { DropDown } from '../components/DropDown';
-import { TextField } from '../components/TextFields';
-import { EventCard } from '../components/Card';
-import { Pagination } from '../components/Pagination';
-import withPageLoadedEffect from '../hocs/withPageLoadedEffect';
-import { SearchContainer2, Title } from '../components/Search';
-import { CardContainer } from '../components/CardContainer';
-import { useDropDown } from '../hooks/useDropDown';
-import { useMediaQueryContext } from '../contexts/AppContextProvider';
+import { DefaultButton } from '../../components/Button';
+import { DropDown } from '../../components/DropDown';
+import { TextField } from '../../components/TextFields';
+import { EventCard } from '../../components/Card';
+import { Pagination } from '../../components/Pagination';
+import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
+import { SearchContainer2, Title } from '../../components/Search';
+import { CardContainer } from '../../components/CardContainer';
+import { useDropDown } from '../../hooks/useDropDown';
+import { useMediaQueryContext } from '../../contexts/AppContextProvider';
 
 const event = () => {
   const [contents, setContents] = useState(new Array(16).fill(0));

@@ -34,17 +34,30 @@ const SearchContainer = styled.div<{
   padding: 0 16px;
   gap: 0;
 `;
-const Container = styled.div<{ Color: ColorType; size: Size; state: State }>`
-  height: ${(props) => (props.size === 'L' ? '52px' : '34px')};
+
+const Container = styled.div<{
+  Color: ColorType;
+  size: Size;
+  state: State;
+  height?: number;
+}>`
+  height: ${({ size, height }) =>
+    height ? `${height}px` : size === 'L' ? '52px' : '34px'};
   border: 1px solid ${(props) => props.Color.stroke.gray1};
   border-radius: 2px;
 
   transition: background 0.2s, border 0.2s;
-  input {
+  input,
+  textarea {
     color: ${Color.light.text.primary};
+    resize: none;
   }
 
   input::placeholder {
+    color: ${Color.light.text.third};
+  }
+
+  textarea::placeholder {
     color: ${Color.light.text.third};
   }
 
@@ -52,6 +65,9 @@ const Container = styled.div<{ Color: ColorType; size: Size; state: State }>`
     props.state === 'DEFAULT' &&
     css`
       &:hover {
+        border-color: ${props.Color.stroke.gray2};
+      }
+      textarea:focus + & {
         border-color: ${props.Color.stroke.gray2};
       }
       input:focus + & {
@@ -77,7 +93,8 @@ const Container = styled.div<{ Color: ColorType; size: Size; state: State }>`
       & {
         background: ${props.Color.background.gray2};
       }
-      input {
+      input,
+      textarea {
         corsor: not-allowed;
         background: ${props.Color.background.gray2};
       }
@@ -94,14 +111,14 @@ const Container = styled.div<{ Color: ColorType; size: Size; state: State }>`
 `;
 
 type TextFieldType = {
-  width: string;
-  state: State;
-  size: Size;
+  width?: string;
+  state?: State;
+  size?: Size;
   placeholder?: string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  inputRef?: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
   isPassword?: boolean;
-  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
 };
@@ -113,19 +130,74 @@ const ClearInput = styled.input`
   text-align: start;
   padding: 0;
 `;
-export const TextField = ({
-  state,
+
+const ClearTextArea = styled.textarea`
+  border: none;
+  &:focus {
+    outline: none;
+  }
+  text-align: start;
+  padding: 0;
+`;
+
+export const TextArea = ({
+  state = 'DEFAULT',
   placeholder,
-  size,
+  size = 'L',
   onChange,
   width,
-  inputRef,
+  onBlur,
+  value,
+  setValue,
+  height,
+}: Omit<TextFieldType, 'isPassword'> & { height: number }) => {
+  const { Color } = useStyleContext();
+
+  return (
+    <Container
+      Color={Color}
+      size={size}
+      state={state}
+      style={{
+        width: width ?? '100%',
+      }}
+      className={'text-field'}
+      height={height}
+    >
+      <ClearTextArea
+        disabled={state === 'DISABLED'}
+        placeholder={placeholder}
+        onChange={
+          onChange ??
+          ((e) => {
+            setValue?.(e.target.value);
+          })
+        }
+        onBlur={(e) => {
+          onBlur?.(e);
+        }}
+        style={{
+          ...(size === 'L' ? Font.body.body1 : Font.body.caption),
+          width: '100%',
+          height: `${height - (size === 'L' ? 32 : 16)}px`,
+        }}
+        value={value}
+      ></ClearTextArea>
+    </Container>
+  );
+};
+
+export const TextField = ({
+  state = 'DEFAULT',
+  placeholder,
+  size = 'L',
+  onChange,
+  width = '100%',
   isPassword,
   onBlur,
   value,
   setValue,
 }: TextFieldType) => {
-  const { isDarkMode } = useContext(DarkModeContext);
   const [resetVisible, setResetVisible] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -173,7 +245,6 @@ export const TextField = ({
           onBlur?.(e);
           onFocusOutHandler();
         }}
-        ref={inputRef}
         style={{
           ...(size === 'L' ? Font.body.body1 : Font.body.caption),
           width: `calc(100% - ${size === 'L' ? '26px' : '20px'})`,
@@ -247,12 +318,12 @@ export const TextField = ({
   );
 };
 export const TextFieldCount = ({
-  state,
+  state = 'DEFAULT',
   placeholder,
-  size,
+  size = 'L',
   onChange,
   maxCount,
-  width,
+  width = '100%',
   inputRef,
 }: TextFieldType & { maxCount: number }) => {
   const [count, setCount] = useState(0);
@@ -302,11 +373,11 @@ export const TextFieldCount = ({
 };
 
 export const SearchField = ({
-  state,
+  state = 'DEFAULT',
   placeholder,
   onChange,
-  size,
-  width,
+  size = 'L',
+  width = '100%',
   inputRef,
   value,
   setValue,

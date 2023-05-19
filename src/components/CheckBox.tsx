@@ -80,9 +80,13 @@ export const CheckBoxField = ({
   children,
   size,
   style,
+  isRow,
+  marginTop,
 }: React.PropsWithChildren & {
   size: ButtonSizeType;
   style?: React.StyleHTMLAttributes<any>;
+  isRow?: boolean;
+  marginTop?: number;
 }) => {
   const { Color } = useStyleContext();
   return (
@@ -90,13 +94,13 @@ export const CheckBoxField = ({
       size={size}
       Color={Color}
       style={{
-        marginTop: '20px',
+        marginTop: marginTop ?? '20px',
         display: 'flex',
         alignItems: 'start',
-        justifyContent: 'center',
+        justifyContent: isRow ? 'start' : 'center',
         width: '100%',
-        flexDirection: 'column',
-        gap: '8px',
+        flexDirection: isRow ? 'row' : 'column',
+        gap: isRow ? '16px' : '8px',
         boxSizing: 'border-box',
         ...style,
       }}

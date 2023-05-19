@@ -10,5 +10,13 @@ module.exports = {
             },
         },
         `@gatsbyjs/reach-router`,
+        {
+            resolve: 'gatsby-plugin-react-svg',
+            options: {
+                rule: {
+                    include: /assets/,
+                },
+            },
+        },
     ],
 };

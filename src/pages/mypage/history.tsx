@@ -17,6 +17,8 @@ import {
   CardContainer,
   CardSectionTitle,
 } from '../../components/CardContainer';
+import { useDropDown } from '../../hooks/useDropDown';
+import { useStyleContext } from '../../contexts/AppContextProvider';
 
 const history = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -25,6 +27,8 @@ const history = () => {
   const { isDesktop, isMobile, isTablet } = useContext(MediaQueryContext);
 
   const { openModal, closeModal } = useContext(ModalContext);
+
+  const categoryState = useDropDown();
 
   const openDeleteModal = React.useCallback(() => {
     openModal({
@@ -46,11 +50,11 @@ const history = () => {
   return (
     <>
       <Title>시청기록</Title>
-      <SearchContainer isDarkMode={isDarkMode}>
+      <SearchContainer>
         <DropDown
           width={isDesktop ? '120px' : '84px'}
           size={'S'}
-          isOpened={categoryOpened}
+          states={categoryState}
           type="DEFAULT"
           contents={[
             {
@@ -70,14 +74,6 @@ const history = () => {
               value: '',
             },
           ]}
-          selected={selectedCategory}
-          onClickUnit={(idx: number) => () => {
-            setSelectecCategory(idx);
-            setCategoryOpened(false);
-          }}
-          onClick={() => {
-            setCategoryOpened(!categoryOpened);
-          }}
           placeholder={'전체'}
         />
         <TextField
@@ -137,6 +133,7 @@ const history = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <EventCard
+              id={0}
               width={
                 isDesktop
                   ? 'calc(25% - 15px)'
@@ -168,6 +165,7 @@ const history = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <SpCard
+              id={0}
               isProceeding={true}
               src={
                 'http://www.thefirstmedia.net/news/photo/202108/80255_62324_611.jpg'
@@ -197,6 +195,7 @@ const history = () => {
         {new Array(isTablet ? 9 : 8).fill(0).map(() => (
           <>
             <NewsCard
+              id={0}
               category={'카테고리'}
               width={
                 isDesktop

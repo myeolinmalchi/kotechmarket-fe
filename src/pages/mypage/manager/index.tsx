@@ -1,18 +1,19 @@
 import React, { useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
-import Avatar from '../../components/Avatar';
-import { DefaultButton } from '../../components/Button';
-import { DropDown } from '../../components/DropDown';
-import { Pagination } from '../../components/Pagination';
-import { SearchContainer2, Title } from '../../components/Search';
-import { TextField } from '../../components/TextFields';
-import { DarkModeContext } from '../../contexts/DarkModeProvider';
-import { MediaQueryContext } from '../../contexts/MediaQueryProvider';
-import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
-import { useCustomNavigate } from '../../hooks/useCustomNavigate';
-import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
-import Color from '../../styles/Color';
-import Font from '../../styles/Font';
+import Avatar from '../../../components/Avatar';
+import { DefaultButton } from '../../../components/Button';
+import { DropDown } from '../../../components/DropDown';
+import { Pagination } from '../../../components/Pagination';
+import { SearchContainer2, Title } from '../../../components/Search';
+import { TextField } from '../../../components/TextFields';
+import { DarkModeContext } from '../../../contexts/DarkModeProvider';
+import { MediaQueryContext } from '../../../contexts/MediaQueryProvider';
+import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
+import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
+import { useDropDown } from '../../../hooks/useDropDown';
+import { useHorizontalScroll } from '../../../hooks/useHorizontalScroll';
+import Color from '../../../styles/Color';
+import Font from '../../../styles/Font';
 
 const TableWrapper = styled.div`
   overflow-x: auto;
@@ -126,10 +127,13 @@ const manager = () => {
 
   const navigate = useCustomNavigate();
   const tableRef = useHorizontalScroll();
+
+  const categoryState = useDropDown();
+  const stateState = useDropDown();
   return (
     <>
       <Title>담당자 관리</Title>
-      <SearchContainer2 isDarkMode={isDarkMode}>
+      <SearchContainer2>
         <DropDown
           size={'S'}
           contents={[
@@ -171,15 +175,7 @@ const manager = () => {
             },
           ]}
           type={'DEFAULT'}
-          isOpened={categoryOpened}
-          selected={selectedCategory}
-          onClickUnit={(idx: number) => () => {
-            setCategoryOpened(false);
-            setSelectedCategory(idx);
-          }}
-          onClick={() => {
-            setCategoryOpened(!categoryOpened);
-          }}
+          states={categoryState}
           width={isDesktop ? '120px' : 'calc(50% - 4px)'}
           placeholder={'카테고리'}
         />
@@ -200,15 +196,7 @@ const manager = () => {
             },
           ]}
           type={'DEFAULT'}
-          isOpened={stateOpened}
-          selected={selectedState}
-          onClickUnit={(idx: number) => () => {
-            setStateOpened(false);
-            setSelectedState(idx);
-          }}
-          onClick={() => {
-            setStateOpened(!stateOpened);
-          }}
+          states={stateState}
           width={isDesktop ? '120px' : 'calc(50% - 4px)'}
           placeholder={'상태'}
         />
