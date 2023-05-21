@@ -84,7 +84,7 @@ export const CheckBoxField = ({
   marginTop,
 }: React.PropsWithChildren & {
   size: ButtonSizeType;
-  style?: React.StyleHTMLAttributes<any>;
+  style?: React.StyleHTMLAttributes<HTMLFieldSetElement>;
   isRow?: boolean;
   marginTop?: number;
 }) => {

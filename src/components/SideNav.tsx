@@ -555,7 +555,7 @@ export const SideNav = () => {
             ...(userType === 2
               ? [
                   {
-                    path: 'manage',
+                    path: 'manager',
                     label: '담당자 관리',
                   },
                 ]

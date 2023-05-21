@@ -26,6 +26,47 @@ export const Title = ({ children }: React.PropsWithChildren) => {
   );
 };
 
+export const SubTitle = ({ children }: React.PropsWithChildren) => {
+  const { Color } = useStyleContext();
+  const { isDesktop, isMobile } = useContext(MediaQueryContext);
+  return (
+    <span
+      style={{
+        ...(isDesktop ? Font.body.body2 : Font.body.body1),
+        padding: isDesktop ? '' : isMobile ? '0 16px' : '0 28px',
+        marginTop: isDesktop ? '' : '60px',
+        boxSizing: 'border-box',
+        color: Color.text.secondary,
+        width: '100%',
+        textAlign: 'start',
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
+export const SmallTitle = ({ children }: React.PropsWithChildren) => {
+  const { Color } = useStyleContext();
+  const { isDesktop, isMobile } = useContext(MediaQueryContext);
+  return (
+    <span
+      style={{
+        ...(isDesktop ? Font.title.display1 : Font.title.display1),
+        padding: isDesktop ? '' : isMobile ? '0 16px' : '0 28px',
+        marginTop: isDesktop ? '8px' : '8px',
+        boxSizing: 'border-box',
+        color: Color.text.primary,
+        width: '100%',
+        textAlign: 'start',
+        marginBottom: isDesktop ? '24px' : '18px',
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
 const $SearchContainer = styled.div<{ Color: ColorType }>`
   border: 1px solid ${(props) => props.Color.stroke.gray1};
   padding: 16px;
