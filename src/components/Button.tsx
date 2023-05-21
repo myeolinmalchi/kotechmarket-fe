@@ -318,6 +318,7 @@ export const TextButton = ({
       padding: '0',
       border: 'none',
       background: 'none',
+      margine: '0',
       height: height,
       ...(() => {
         if (size === 'S') {
