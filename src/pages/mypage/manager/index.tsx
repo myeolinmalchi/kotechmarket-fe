@@ -119,11 +119,6 @@ const ColumnWidth = styled.col`
 const manager = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const { isDesktop } = useContext(MediaQueryContext);
-  const [categoryOpened, setCategoryOpened] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(-1);
-
-  const [stateOpened, setStateOpened] = useState(false);
-  const [selectedState, setSelectedState] = useState(-1);
 
   const navigate = useCustomNavigate();
   const tableRef = useHorizontalScroll();

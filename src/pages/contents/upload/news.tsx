@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
 import {
@@ -12,6 +12,23 @@ import { DefaultButton, TextButton } from '../../../components/Button';
 import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
 import { TextArea, TextField } from '../../../components/TextFields';
 import { CheckBox, CheckBoxField } from '../../../components/CheckBox';
+import {
+  ButtonWrapper,
+  ColumnWidth,
+  FlexWrapper,
+  Table,
+  TableWrapper,
+  Td,
+  Th,
+} from '../../../components/Table';
+import {
+  SearchContainer,
+  SmallTitle,
+  SubTitle,
+} from '../../../components/Search';
+import { DropDown } from '../../../components/DropDown';
+import { useDropDown } from '../../../hooks/useDropDown';
+import { Pagination } from '../../../components/Pagination';
 
 const Container = styled.div<{ Color: ColorType }>`
   display: flex;
@@ -408,13 +425,13 @@ type FileType = {
 };
 
 type WriteTextSectionProps = {
-  $generated: ReactState<boolean>;
   genFormValues: GenerationFormType;
+  $generated: ReactState<boolean>;
 };
 
 const WriteTextSection = ({
-  $generated: [generated, setGenerated],
   genFormValues,
+  $generated: [generated, setGenerated],
 }: WriteTextSectionProps) => {
   const [newsSubjectValue, setNewsSubjectValue] = React.useState('');
   const { Color } = useStyleContext();
@@ -478,14 +495,125 @@ const WriteTextSection = ({
   );
 };
 
+type EssentialPaperType = {
+  type: 0 | 1 | 2; // 특허 논문 보고서
+  fileName: string;
+  author: string;
+};
+
+type PaperType = EssentialPaperType & {
+  paperNo: string;
+  name: string;
+  year: number;
+};
+
 type ChoosePaperSectionType = {
   genFormValues: GenerationFormType;
   $generated: ReactState<boolean>;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
+  onClick: () => void;
+  $selectedPapers: ReactState<EssentialPaperType[]>;
 };
+
+const PaperItem = ({
+  type,
+  fileName,
+  author,
+  clearHandler,
+}: EssentialPaperType & { clearHandler: () => void }) => {
+  const { Color } = useStyleContext();
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '24px 20px',
+        border: `1px solid ${Color.stroke.gray1}`,
+        borderRadius: '4px',
+        width: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          width: 'calc(100% - 24px)',
+          gap: '8px',
+        }}
+      >
+        <span
+          style={{
+            ...Font.title.subhead3,
+            color: Color.text.primary,
+            width: '100%',
+          }}
+        >
+          <span
+            style={{
+              padding: '2px 8px',
+              borderRadius: '4px',
+              background: Color.background.blue1,
+              marginRight: '8px',
+              ...Font.title.subhead2,
+              color: Color.text.default,
+            }}
+          >
+            {type === 0 ? '특허' : type === 1 ? '논문' : '보고서'}
+          </span>
+          <span>{fileName}</span>
+        </span>
+        <span
+          style={{
+            ...Font.body.caption,
+            color: Color.text.third,
+            width: '100%',
+            textAlign: 'start',
+          }}
+        >
+          {author}
+        </span>
+      </div>
+      <ClearButton onClick={clearHandler}>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M17.2929 18.7071C17.6834 19.0976 18.3166 19.0976 18.7071 18.7071C19.0976 18.3166 19.0976 17.6834 18.7071 17.2929L13.4142 12L18.7071 6.70711C19.0976 6.31658 19.0976 5.68342 18.7071 5.29289C18.3166 4.90237 17.6834 4.90237 17.2929 5.29289L12 10.5858L6.70711 5.29289C6.31658 4.90237 5.68342 4.90237 5.29289 5.29289C4.90237 5.68342 4.90237 6.31658 5.29289 6.70711L10.5858 12L5.29289 17.2929C4.90237 17.6834 4.90237 18.3166 5.29289 18.7071C5.68342 19.0976 6.31658 19.0976 6.70711 18.7071L12 13.4142L17.2929 18.7071Z"
+            fill="#5D6169"
+          />
+        </svg>
+      </ClearButton>
+    </div>
+  );
+};
+
+const PaperItemContainer = styled.div<{ Color: ColorType }>`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${(props) => props.Color.stroke.gray1};
+  }
+
+  overflow-y: scroll;
+`;
 
 const ChoosePaperSection = ({
   genFormValues,
   $generated: [generated, setGenerated],
+  $pageMode: [_, setPageMode],
+  onClick,
+  $selectedPapers: [selectedPapers, setSelectedPapers],
 }: ChoosePaperSectionType) => {
   const { Color } = useStyleContext();
   const [visible, setVisible] = React.useState(false);
@@ -502,13 +630,15 @@ const ChoosePaperSection = ({
         width: '100%',
         transition: 'opacity 0.2s ease-in-out',
         opacity: visible ? '1' : '0',
+        boxSizing: 'border-box',
       }}
     >
-      <div
+      <PaperItemContainer
+        Color={Color}
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: selectedPapers.length === 0 ? 'center' : 'start',
           flexDirection: 'column',
           width: '100%',
           height: '300px',
@@ -516,26 +646,57 @@ const ChoosePaperSection = ({
           borderRadius: '4px',
           gap: '12px',
           boxSizing: 'border-box',
+          padding: '24px 18px',
         }}
       >
-        <span style={{ ...Font.title.subhead3, color: Color.text.primary }}>
-          기술문서를 선택해주세요
-        </span>
-        <TextButton style={'PRIMARY'} type={'UNDERLINE'}>
-          기술 선택하기
-        </TextButton>
-      </div>
+        {selectedPapers.length === 0 && (
+          <>
+            <span style={{ ...Font.title.subhead3, color: Color.text.primary }}>
+              기술문서를 선택해주세요
+            </span>
+            <TextButton style={'PRIMARY'} type={'UNDERLINE'} onClick={onClick}>
+              기술 선택하기
+            </TextButton>
+          </>
+        )}
+        {selectedPapers.length > 0 &&
+          selectedPapers.map((props, idx) => (
+            <>
+              <PaperItem
+                {...{
+                  ...props,
+                  clearHandler: () => {
+                    setSelectedPapers(
+                      selectedPapers.filter((_, i) => i !== idx)
+                    );
+                  },
+                }}
+              />
+            </>
+          ))}
+      </PaperItemContainer>
       {!generated && (
         <>
           <Spacer height={24} />
           <DefaultButton
             width={'100%'}
-            state={'DEFAULT'}
+            state={selectedPapers.length > 0 ? 'DEFAULT' : 'DISABLED'}
             onClick={() => setGenerated(true)}
           >
             뉴스 생성하기
           </DefaultButton>
           <Spacer height={18} />
+        </>
+      )}
+      {generated && (
+        <>
+          <GenerationFormArea
+            {...{
+              ...genFormValues,
+              generated,
+              auto: true,
+            }}
+          />
         </>
       )}
       <hr
@@ -548,6 +709,224 @@ const ChoosePaperSection = ({
         }}
       />
     </div>
+  );
+};
+
+type TechType = {
+  $visible: ReactState<boolean>;
+  backHandler: () => void;
+  submitHandler: () => void;
+  $selectedPapers: ReactState<EssentialPaperType[]>;
+};
+
+const SearchTech = ({
+  $visible: [, setVisible],
+  backHandler,
+  submitHandler,
+  $selectedPapers: [, setSelectedPapers],
+}: TechType) => {
+  const { Color } = useStyleContext();
+  const { isDesktop } = useMediaQueryContext();
+  const categoryState = useDropDown();
+
+  const [papers, setPapers] = useState<PaperType[]>(
+    new Array(10).fill({
+      type: 1,
+      paperNo: 'TRKO200200002804',
+      name: '기술명',
+      author: '홍길동',
+      year: 2023,
+      fileName: '[강소특구 제2캠퍼스]입주신청서 및 사업계획서 양식.hwp',
+    })
+  );
+
+  const [selectedPaperIndex, setSelectedPaperIndex] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    setSelectedPaperIndex(new Array(papers.length).fill(false));
+  }, [papers]);
+
+  useEffect(() => {
+    setSelectedPapers(
+      selectedPaperIndex
+        .reduce((acc, c, idx) => (c ? [...acc, idx] : acc), [] as number[])
+        .map((i) => ({
+          type: papers[i].type,
+          fileName: papers[i].fileName,
+          author: papers[i].author,
+        }))
+    );
+  }, [selectedPaperIndex]);
+
+  useEffect(() => {
+    setVisible(true);
+  }, []);
+
+  return (
+    <>
+      <SubTitle>뉴스/기술찾기</SubTitle>
+      <SmallTitle>기술찾기</SmallTitle>
+      <SearchContainer>
+        <DropDown
+          size={'S'}
+          contents={[
+            {
+              label: '전체',
+              value: '0',
+            },
+            {
+              label: '특허',
+              value: '1',
+            },
+            {
+              label: '논문',
+              value: '2',
+            },
+            {
+              label: '보고서',
+              value: '3',
+            },
+          ]}
+          type={'DEFAULT'}
+          states={categoryState}
+          width={isDesktop ? '200px' : 'calc(50% - 4px)'}
+          placeholder={'카테고리'}
+        />
+        <TextField
+          state={'DEFAULT'}
+          size={'S'}
+          width={
+            isDesktop
+              ? 'calc(100% - 69px - 12px - 200px)'
+              : 'calc(100% - 69px - 8px)'
+          }
+          placeholder={'검색어를 입력해주세요.'}
+        />
+        <DefaultButton
+          size={'S'}
+          state={'DEFAULT'}
+          style={'PRIMARY'}
+          type={'NONE'}
+          text={'검색하기'}
+          width={'69px'}
+        />
+      </SearchContainer>
+      <TableWrapper Color={Color}>
+        <Table Color={Color}>
+          <colgroup>
+            <ColumnWidth width="8%" />
+            <ColumnWidth width="12%" />
+            <ColumnWidth width="30%" />
+            <ColumnWidth width="17%" />
+            <ColumnWidth width="8%" />
+            <ColumnWidth width="17%" />
+            <ColumnWidth width="8%" />
+          </colgroup>
+          <thead>
+            <tr style={{ ...Font.body.caption }}>
+              <Th>카테고리</Th>
+              <Th>문서번호</Th>
+              <Th>기술명</Th>
+              <Th>연구원</Th>
+              <Th>등록년도</Th>
+              <Th>문서조회</Th>
+              <Th>선택</Th>
+            </tr>
+          </thead>
+          <tbody style={{ ...Font.body.caption }}>
+            {papers.map(
+              ({ type, paperNo, name, author, year, fileName }, idx) => (
+                <tr>
+                  <Td>
+                    {type === 0 ? '특허' : type === 1 ? '논문' : '보고서'}
+                  </Td>
+                  <Td>{paperNo}</Td>
+                  <Td>{name}</Td>
+                  <Td>{author}</Td>
+                  <Td>{year}</Td>
+                  <Td>
+                    <FlexWrapper>
+                      <TextButton
+                        style={'PRIMARY'}
+                        type={'UNDERLINE'}
+                        size={'SS'}
+                      >
+                        PDF 보기
+                      </TextButton>
+                    </FlexWrapper>
+                  </Td>
+                  <Td>
+                    <CheckBoxField
+                      size={'S'}
+                      marginTop={0}
+                      style={
+                        {
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        } as React.StyleHTMLAttributes<any>
+                      }
+                    >
+                      <CheckBox
+                        size={'S'}
+                        checked={selectedPaperIndex[idx]}
+                        onChange={() => {
+                          setSelectedPaperIndex(
+                            selectedPaperIndex.map((a, i) =>
+                              i === idx ? !a : a
+                            )
+                          );
+                        }}
+                      />
+                    </CheckBoxField>
+                  </Td>
+                </tr>
+              )
+            )}
+          </tbody>
+        </Table>
+      </TableWrapper>
+      <span
+        style={{
+          width: '100%',
+          textAlign: 'start',
+          color: Color.text.secondary,
+          ...Font.body.body1,
+          marginTop: '24px',
+          marginBottom: '32px',
+        }}
+      >
+        *PDF가 등록된 기술만 선택이 가능합니다.
+      </span>
+      <ButtonWrapper>
+        <DefaultButton style={'OUTLINE'} size="S" onClick={backHandler}>
+          뒤로가기
+        </DefaultButton>
+        <DefaultButton size="S" onClick={submitHandler}>
+          등록하기
+        </DefaultButton>
+      </ButtonWrapper>
+      <div
+        style={{
+          marginTop: '60px',
+        }}
+      ></div>
+      <Pagination
+        {...(isDesktop
+          ? {
+              start: 1,
+              end: 10,
+              currentPage: 1,
+              mode: 'NORMAL',
+            }
+          : {
+              start: 1,
+              end: 5,
+              currentPage: 1,
+              mode: 'NORMAL',
+            })}
+      />
+      <div style={{ marginBottom: isDesktop ? '60px' : '120px' }}></div>
+    </>
   );
 };
 
@@ -564,6 +943,12 @@ const news = () => {
 
   const { isDesktop } = useMediaQueryContext();
 
+  const [pageMode, setPageMode] = useState<
+    'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'
+  >('DEFAULT');
+
+  const [visible, setVisible] = useState(true);
+
   const $title = React.useState('');
   const $subtitle = React.useState('');
   const $thumbnail = React.useState<FileType>();
@@ -571,6 +956,14 @@ const news = () => {
   const $keywords = React.useState<string[]>([]);
   const $reporterInfo = React.useState('');
   const $categories = React.useState<number[]>([]);
+
+  const [selectedPapers, setSelectedPapers] = useState<
+    {
+      type: 0 | 1 | 2; // 특허 논문 보고서
+      fileName: string;
+      author: string;
+    }[]
+  >([]);
 
   const genFormValues = React.useMemo(
     () => ({
@@ -632,125 +1025,178 @@ const news = () => {
   }, [selectedType]);
 
   return (
-    <Container Color={Color}>
-      <span style={{ ...Font.body.body2, marginBottom: '8px' }}>등록하기</span>
-      <span style={{ ...Font.title.display2, marginBottom: '36px' }}>뉴스</span>
-      <span style={{ ...Font.title.headline, marginBottom: '28px' }}>
-        유형선택
-        <InfoButton />
-      </span>
-      <span
-        style={{
-          ...Font.body.body1,
-          marginBottom: '13px',
-          color: Color.text.secondary,
-        }}
-      >
-        유형선택 <span style={{ color: Color.text.red }}>*</span>
-      </span>
-      <RadioField size={'S'} isRow={true}>
-        <RadioButton
-          label={'기술문서'}
-          size={'S'}
-          onChange={() => {
-            setSelectedType('CHOOSE_PAPER');
-          }}
-          checked={selectedType === 'CHOOSE_PAPER'}
-        />
-        <RadioButton
-          label={'글 입력'}
-          size={'S'}
-          onChange={() => setSelectedType('WRITE_TEXT')}
-          checked={selectedType === 'WRITE_TEXT'}
-        />
-        <RadioButton
-          label={'사용안함'}
-          size={'S'}
-          onChange={() => setSelectedType('NONE')}
-          checked={selectedType === 'NONE'}
-        />
-      </RadioField>
-      {selectedType === 'CHOOSE_PAPER' && (
-        <>
-          <Spacer height={32} />
-          <ChoosePaperSection
-            {...{
-              genFormValues,
-              $generated: [generated, setGenerated],
-            }}
-          />
-        </>
-      )}
-      {selectedType === 'WRITE_TEXT' && (
-        <>
-          <Spacer height={32} />
-          <WriteTextSection
-            {...{
-              genFormValues,
-              $generated: [generated, setGenerated],
-            }}
-          />
-        </>
-      )}
-      {selectedType === 'NONE' && (
-        <>
-          <GenerationFormArea
-            {...{
-              ...genFormValues,
-              generated: true,
-              auto: false,
-            }}
-          />
-          <hr
-            style={{
-              border: '0',
-              width: '100%',
-              height: '1px',
-              background: Color.stroke.gray1,
-              marginBottom: '24px',
-            }}
-          />
-        </>
-      )}
-      {!selectedType && (
-        <>
-          <Spacer height={32} />
-          <hr
-            style={{
-              border: '0',
-              width: '100%',
-              height: '1px',
-              background: Color.stroke.gray1,
-              marginBottom: '24px',
-            }}
-          />
-        </>
-      )}
-      {(generated || selectedType === 'NONE') && (
-        <div
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        transition: 'opacity 0.2s ease-in-out',
+        opacity: visible ? '1' : '0',
+      }}
+    >
+      {pageMode === 'DEFAULT' && (
+        <Container
+          Color={Color}
           style={{
-            display: 'flex',
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: '12px',
+            opacity: visible ? '1' : '0',
+            transition: 'opacity 0.2s ease-in-out',
           }}
         >
-          <DefaultButton
-            style={'OUTLINE'}
-            onClick={() => navigate('/contents/upload')}
-          >
-            돌아가기
-          </DefaultButton>
-          <DefaultButton
-            style={'PRIMARY'}
-            state={isValid ? 'DEFAULT' : 'DISABLED'}
-          >
+          <span style={{ ...Font.body.body2, marginBottom: '8px' }}>
             등록하기
-          </DefaultButton>
-        </div>
+          </span>
+          <span style={{ ...Font.title.display2, marginBottom: '36px' }}>
+            뉴스
+          </span>
+          <span style={{ ...Font.title.headline, marginBottom: '28px' }}>
+            유형선택
+            <InfoButton />
+          </span>
+          <span
+            style={{
+              ...Font.body.body1,
+              marginBottom: '13px',
+              color: Color.text.secondary,
+            }}
+          >
+            유형선택 <span style={{ color: Color.text.red }}>*</span>
+          </span>
+          <RadioField size={'S'} isRow={true}>
+            <RadioButton
+              label={'기술문서'}
+              size={'S'}
+              onChange={() => {
+                setSelectedType('CHOOSE_PAPER');
+              }}
+              checked={selectedType === 'CHOOSE_PAPER'}
+            />
+            <RadioButton
+              label={'글 입력'}
+              size={'S'}
+              onChange={() => setSelectedType('WRITE_TEXT')}
+              checked={selectedType === 'WRITE_TEXT'}
+            />
+            <RadioButton
+              label={'사용안함'}
+              size={'S'}
+              onChange={() => setSelectedType('NONE')}
+              checked={selectedType === 'NONE'}
+            />
+          </RadioField>
+          {selectedType === 'CHOOSE_PAPER' && (
+            <>
+              <Spacer height={32} />
+              <ChoosePaperSection
+                {...{
+                  genFormValues,
+                  $generated: [generated, setGenerated],
+                  $pageMode: [pageMode, setPageMode],
+                  onClick: () => {
+                    setVisible(false);
+                    setTimeout(() => {
+                      setPageMode('SEARCH_TECH');
+                    }, 200);
+                  },
+                  $selectedPapers: [selectedPapers, setSelectedPapers],
+                }}
+              />
+            </>
+          )}
+          {selectedType === 'WRITE_TEXT' && (
+            <>
+              <Spacer height={32} />
+              <WriteTextSection
+                {...{
+                  genFormValues,
+                  $generated: [generated, setGenerated],
+                }}
+              />
+            </>
+          )}
+          {selectedType === 'NONE' && (
+            <>
+              <GenerationFormArea
+                {...{
+                  ...genFormValues,
+                  generated: true,
+                  auto: false,
+                }}
+              />
+              <hr
+                style={{
+                  border: '0',
+                  width: '100%',
+                  height: '1px',
+                  background: Color.stroke.gray1,
+                  marginBottom: '24px',
+                }}
+              />
+            </>
+          )}
+          {!selectedType && (
+            <>
+              <Spacer height={32} />
+              <hr
+                style={{
+                  border: '0',
+                  width: '100%',
+                  height: '1px',
+                  background: Color.stroke.gray1,
+                  marginBottom: '24px',
+                }}
+              />
+            </>
+          )}
+          {(generated || selectedType === 'NONE') && (
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: '12px',
+              }}
+            >
+              <DefaultButton
+                style={'OUTLINE'}
+                onClick={() => navigate('/contents/upload')}
+              >
+                돌아가기
+              </DefaultButton>
+              <DefaultButton
+                style={'PRIMARY'}
+                state={isValid ? 'DEFAULT' : 'DISABLED'}
+              >
+                등록하기
+              </DefaultButton>
+            </div>
+          )}
+        </Container>
       )}
-    </Container>
+      {pageMode === 'SEARCH_TECH' && (
+        <SearchTech
+          $visible={[visible, setVisible]}
+          backHandler={() => {
+            setVisible(false);
+            setTimeout(() => {
+              setPageMode('DEFAULT');
+              setVisible(true);
+              setSelectedPapers([]);
+            }, 200);
+          }}
+          submitHandler={() => {
+            setVisible(false);
+            setTimeout(() => {
+              setPageMode('DEFAULT');
+              setVisible(true);
+            }, 200);
+          }}
+          $selectedPapers={[selectedPapers, setSelectedPapers]}
+        />
+      )}
+    </div>
   );
 };
 
