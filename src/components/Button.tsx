@@ -240,6 +240,7 @@ export const TextButton = ({
   width,
   text,
   height,
+  children,
 }: ButtonProps & { height?: string }) => {
   const button = useRef<HTMLButtonElement>(null);
   const { isHovered, isActivated } = useMouseInteraction(button);
@@ -378,7 +379,7 @@ export const TextButton = ({
   return (
     <button onClick={onClick} ref={button} style={buttonStyle}>
       {type === 'LEFT' ? plusIcon : ''}
-      <span>{text}</span>
+      {children ?? <span>{text}</span>}
       {type === 'RIGHT' ? plusIcon : ''}
     </button>
   );
