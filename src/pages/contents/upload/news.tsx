@@ -1,3 +1,4 @@
+// TODO: 문서 편집기 추가
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
@@ -29,6 +30,7 @@ import {
 import { DropDown } from '../../../components/DropDown';
 import { useDropDown } from '../../../hooks/useDropDown';
 import { Pagination } from '../../../components/Pagination';
+import Avatar from '../../../components/Avatar';
 
 const Container = styled.div<{ Color: ColorType }>`
   display: flex;
@@ -264,6 +266,7 @@ type GenerationFormType = {
   $keywords: ReactState<string[]>;
   $reporterInfo: ReactState<string>;
   $categories: ReactState<number[]>;
+  $selectedReporter: ReactState<ReporterType | undefined>;
 };
 
 const GenerationFormArea = ({
@@ -274,9 +277,17 @@ const GenerationFormArea = ({
   $keywords: [keywords, setKeywords],
   $reporterInfo: [reporterInfo, setReporterInfo],
   $categories: [categories, setCategories],
+  $selectedReporter: [selectedReporter, setSelectedReporter],
   generated,
   auto,
-}: GenerationFormType & { generated: boolean; auto: boolean }) => {
+  $pageMode: [, setPageMode],
+  $pageVisible: [pageVisible, setPageVisible],
+}: GenerationFormType & {
+  generated: boolean;
+  auto: boolean;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
+  $pageVisible: ReactState<boolean>;
+}) => {
   const { Color } = useStyleContext();
   const [visible, setVisible] = useState(false);
 
@@ -379,8 +390,23 @@ const GenerationFormArea = ({
           gap: '8px',
         }}
       >
-        <TextField size={'L'} state={'DISABLED'} width={'calc(85% - 4px)'} />
-        <DefaultButton size={'M'} height={'52px'} width={'calc(15% - 4px)'}>
+        <TextField
+          size={'L'}
+          state={'DISABLED'}
+          width={'calc(85% - 4px)'}
+          placeholder={selectedReporter?.name ?? '기자 정보를 등록해주세요.'}
+        />
+        <DefaultButton
+          size={'M'}
+          height={'52px'}
+          width={'calc(15% - 4px)'}
+          onClick={() => {
+            setPageVisible(false);
+            setTimeout(() => {
+              setPageMode('SEARCH_REPORTER');
+            }, 200);
+          }}
+        >
           등록하기
         </DefaultButton>
       </div>
@@ -427,11 +453,13 @@ type FileType = {
 type WriteTextSectionProps = {
   genFormValues: GenerationFormType;
   $generated: ReactState<boolean>;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
 };
 
 const WriteTextSection = ({
   genFormValues,
   $generated: [generated, setGenerated],
+  $pageMode: [pageMode, setPageMode],
 }: WriteTextSectionProps) => {
   const [newsSubjectValue, setNewsSubjectValue] = React.useState('');
   const { Color } = useStyleContext();
@@ -478,6 +506,8 @@ const WriteTextSection = ({
               ...genFormValues,
               generated,
               auto: true,
+              $pageMode: [pageMode, setPageMode],
+              $pageVisible: [visible, setVisible],
             }}
           />
         </>
@@ -611,7 +641,7 @@ const PaperItemContainer = styled.div<{ Color: ColorType }>`
 const ChoosePaperSection = ({
   genFormValues,
   $generated: [generated, setGenerated],
-  $pageMode: [_, setPageMode],
+  $pageMode,
   onClick,
   $selectedPapers: [selectedPapers, setSelectedPapers],
 }: ChoosePaperSectionType) => {
@@ -695,6 +725,8 @@ const ChoosePaperSection = ({
               ...genFormValues,
               generated,
               auto: true,
+              $pageMode,
+              $pageVisible: [visible, setVisible],
             }}
           />
         </>
@@ -930,6 +962,215 @@ const SearchTech = ({
   );
 };
 
+type ReporterType = {
+  name: string;
+  src?: string;
+  team: string;
+  position: string;
+  email: string;
+  office: string;
+  phone: string;
+  state: 'active' | 'onleave' | 'terminated';
+};
+
+type ReporterPageType = {
+  $visible: ReactState<boolean>;
+  backHandler: () => void;
+  submitHandler: () => void;
+  $selectedReporter: ReactState<ReporterType | undefined>;
+};
+
+const SearchReporter = ({
+  $visible: [, setVisible],
+  backHandler,
+  submitHandler,
+  $selectedReporter: [, setSelectedReporter],
+}: ReporterPageType) => {
+  const { Color } = useStyleContext();
+  const { isDesktop } = useMediaQueryContext();
+  const categoryState = useDropDown();
+
+  const [reporters, setReporters] = useState<ReporterType[]>(
+    new Array(10).fill({
+      name: '김사무엘',
+      team: '부서명',
+      position: '직책',
+      email: 'test@naver.com',
+      office: '02-123-1234',
+      phone: '010-1234-5678',
+      state: 'active',
+    })
+  );
+
+  const [reporterIndex, setReporterIndex] = useState<number>();
+
+  useEffect(() => {
+    setSelectedReporter(reporters.find((_, idx) => idx === reporterIndex));
+  }, [reporterIndex]);
+
+  useEffect(() => {
+    setVisible(true);
+  }, []);
+
+  return (
+    <>
+      <SubTitle>뉴스/기자정보</SubTitle>
+      <SmallTitle>기자정보</SmallTitle>
+      <SearchContainer>
+        <DropDown
+          size={'S'}
+          contents={[
+            {
+              label: '전체',
+              value: '0',
+            },
+            {
+              label: '담당자',
+              value: '1',
+            },
+            {
+              label: '직책',
+              value: '2',
+            },
+            {
+              label: '부서',
+              value: '3',
+            },
+          ]}
+          type={'DEFAULT'}
+          states={categoryState}
+          width={isDesktop ? '200px' : 'calc(50% - 4px)'}
+          placeholder={'카테고리'}
+        />
+        <TextField
+          state={'DEFAULT'}
+          size={'S'}
+          width={
+            isDesktop
+              ? 'calc(100% - 69px - 12px - 200px)'
+              : 'calc(100% - 69px - 8px)'
+          }
+          placeholder={'검색어를 입력해주세요.'}
+        />
+        <DefaultButton
+          size={'S'}
+          state={'DEFAULT'}
+          style={'PRIMARY'}
+          type={'NONE'}
+          text={'검색하기'}
+          width={'69px'}
+        />
+      </SearchContainer>
+      <TableWrapper Color={Color}>
+        <Table Color={Color}>
+          <colgroup>
+            <ColumnWidth width="18%" />
+            <ColumnWidth width="10%" />
+            <ColumnWidth width="10%" />
+            <ColumnWidth width="18%" />
+            <ColumnWidth width="15%" />
+            <ColumnWidth width="15%" />
+            <ColumnWidth width="8%" />
+            <ColumnWidth width="6%" />
+          </colgroup>
+          <thead>
+            <tr style={{ ...Font.body.caption }}>
+              <Th>담당자</Th>
+              <Th>부서</Th>
+              <Th>직책</Th>
+              <Th>이메일</Th>
+              <Th>사무실 연락처</Th>
+              <Th>휴대폰번호</Th>
+              <Th>근무상태</Th>
+              <Th>선택</Th>
+            </tr>
+          </thead>
+          <tbody style={{ ...Font.body.caption }}>
+            {reporters.map(
+              (
+                { name, src, team, position, email, office, phone, state },
+                idx
+              ) => (
+                <tr>
+                  <Td>
+                    <FlexWrapper>
+                      <Avatar size={'S'} src={src} />
+                      {name}
+                    </FlexWrapper>
+                  </Td>
+                  <Td>{team}</Td>
+                  <Td>{position}</Td>
+                  <Td>{email}</Td>
+                  <Td>{office}</Td>
+                  <Td>{phone}</Td>
+                  <Td>
+                    {state === 'active'
+                      ? '재직중'
+                      : state === 'onleave'
+                      ? '휴직중'
+                      : '퇴사'}
+                  </Td>
+                  <Td>
+                    <RadioField
+                      size="S"
+                      style={
+                        {
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        } as React.StyleHTMLAttributes<any>
+                      }
+                    >
+                      <RadioButton
+                        size="S"
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setReporterIndex(idx);
+                          }
+                        }}
+                        checked={reporterIndex === idx}
+                      />
+                    </RadioField>
+                  </Td>
+                </tr>
+              )
+            )}
+          </tbody>
+        </Table>
+      </TableWrapper>
+      <Spacer height={24} />
+      <ButtonWrapper>
+        <DefaultButton style={'OUTLINE'} size="S" onClick={backHandler}>
+          뒤로가기
+        </DefaultButton>
+        <DefaultButton size="S" onClick={submitHandler}>
+          등록하기
+        </DefaultButton>
+      </ButtonWrapper>
+      <div
+        style={{
+          marginTop: '60px',
+        }}
+      ></div>
+      <Pagination
+        {...(isDesktop
+          ? {
+              start: 1,
+              end: 10,
+              currentPage: 1,
+              mode: 'NORMAL',
+            }
+          : {
+              start: 1,
+              end: 5,
+              currentPage: 1,
+              mode: 'NORMAL',
+            })}
+      />
+      <div style={{ marginBottom: isDesktop ? '60px' : '120px' }}></div>
+    </>
+  );
+};
+
 const news = () => {
   const { Color } = useStyleContext();
 
@@ -965,6 +1206,8 @@ const news = () => {
     }[]
   >([]);
 
+  const [selectedReporter, setSelectedReporter] = useState<ReporterType>();
+
   const genFormValues = React.useMemo(
     () => ({
       $title,
@@ -974,6 +1217,9 @@ const news = () => {
       $keywords,
       $reporterInfo,
       $categories,
+      $selectedReporter: [selectedReporter, setSelectedReporter] as ReactState<
+        ReporterType | undefined
+      >,
     }),
     [
       $title[0],
@@ -983,6 +1229,7 @@ const news = () => {
       $keywords[0],
       $reporterInfo[0],
       $categories[0],
+      selectedReporter,
     ]
   );
 
@@ -990,6 +1237,7 @@ const news = () => {
 
   React.useEffect(() => {
     const test =
+      selectedReporter &&
       $title[0].length > 0 &&
       $subtitle[0].length > 0 &&
       $thumbnail[0]?.file &&
@@ -1000,6 +1248,8 @@ const news = () => {
 
     if (test) {
       setIsValid(true);
+    } else {
+      setIsValid(false);
     }
   }, [
     $title[0],
@@ -1009,6 +1259,7 @@ const news = () => {
     $keywords[0],
     $reporterInfo[0],
     $categories[0],
+    selectedReporter,
   ]);
 
   React.useEffect(() => {
@@ -1022,6 +1273,7 @@ const news = () => {
     $keywords[1]([]);
     $reporterInfo[1]('');
     $categories[1]([]);
+    setSelectedReporter(undefined);
   }, [selectedType]);
 
   return (
@@ -1111,6 +1363,7 @@ const news = () => {
                 {...{
                   genFormValues,
                   $generated: [generated, setGenerated],
+                  $pageMode: [pageMode, setPageMode],
                 }}
               />
             </>
@@ -1122,6 +1375,8 @@ const news = () => {
                   ...genFormValues,
                   generated: true,
                   auto: false,
+                  $pageMode: [pageMode, setPageMode],
+                  $pageVisible: [visible, setVisible],
                 }}
               />
               <hr
@@ -1175,6 +1430,27 @@ const news = () => {
           )}
         </Container>
       )}
+      {pageMode === 'SEARCH_REPORTER' && (
+        <SearchReporter
+          $visible={[visible, setVisible]}
+          backHandler={() => {
+            setVisible(false);
+            setTimeout(() => {
+              setPageMode('DEFAULT');
+              setVisible(true);
+              setSelectedPapers([]);
+            }, 200);
+          }}
+          submitHandler={() => {
+            setVisible(false);
+            setTimeout(() => {
+              setPageMode('DEFAULT');
+              setVisible(true);
+            }, 200);
+          }}
+          $selectedReporter={[selectedReporter, setSelectedReporter]}
+        />
+      )}
       {pageMode === 'SEARCH_TECH' && (
         <SearchTech
           $visible={[visible, setVisible]}
@@ -1183,7 +1459,7 @@ const news = () => {
             setTimeout(() => {
               setPageMode('DEFAULT');
               setVisible(true);
-              setSelectedPapers([]);
+              setSelectedReporter(undefined);
             }, 200);
           }}
           submitHandler={() => {

@@ -122,10 +122,15 @@ export const RadioField = ({
   children,
   size,
   isRow,
-}: React.PropsWithChildren & { size: ButtonSizeType; isRow?: boolean }) => {
+  style,
+}: React.PropsWithChildren & {
+  size: ButtonSizeType;
+  isRow?: boolean;
+  style?: React.StyleHTMLAttributes<HTMLFieldSetElement>;
+}) => {
   const { Color } = useStyleContext();
   return (
-    <$RadioField size={size} Color={Color} isRow={isRow}>
+    <$RadioField size={size} Color={Color} isRow={isRow} style={{ ...style }}>
       {children}
     </$RadioField>
   );
@@ -135,7 +140,7 @@ type RadioButtonProps = {
   name?: string;
   value?: string;
   checked?: boolean;
-  label: string;
+  label?: string;
   disabled?: boolean;
   size: ButtonSizeType;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -162,17 +167,19 @@ export const RadioButton = ({
         disabled={disabled}
         onChange={onChange}
       />
-      <span
-        style={{
-          ...(size === 'L' ? Font.body.body2 : Font.body.caption),
-          verticalAlign: 'middle',
-          textAlign: 'center',
-          width: 'fit-content',
-          color: Color.text.secondary,
-        }}
-      >
-        {label}
-      </span>
+      {label && (
+        <span
+          style={{
+            ...(size === 'L' ? Font.body.body2 : Font.body.caption),
+            verticalAlign: 'middle',
+            textAlign: 'center',
+            width: 'fit-content',
+            color: Color.text.secondary,
+          }}
+        >
+          {label}
+        </span>
+      )}
     </label>
   );
 };
