@@ -6,6 +6,7 @@ import { DarkModeContext } from '../contexts/DarkModeProvider';
 import Font from '../styles/Font';
 import Shadow from '../styles/Shadow';
 import { ColorType } from '../types/Style';
+import { TextField } from './TextFields';
 
 export const DropDownContainer = styled.div`
   display: inline-block;
@@ -228,6 +229,7 @@ type DropDownProps = {
   width: string;
   placeholder?: string;
   size: 'S' | 'L';
+  state?: 'DEFAULT' | 'DISABLED';
 };
 
 export const DropDown = ({
@@ -237,27 +239,40 @@ export const DropDown = ({
   width,
   placeholder,
   size,
+  state = 'DEFAULT',
 }: DropDownProps) => {
   return (
     <DropDownContainer style={{ width: width }}>
-      <DropDownHeader
-        size={size}
-        type={type}
-        label={
-          selected === -1
-            ? placeholder ?? contents[0].label
-            : contents[selected].label
-        }
-        isSelected={selected !== -1}
-        isOpened={isOpened}
-        onClick={onClick}
-      />
-      <DropDownContents
-        contents={contents}
-        selected={selected}
-        onClickUnit={onClickUnit}
-        isOpened={isOpened}
-      />
+      {state === 'DISABLED' ? (
+        <>
+          <TextField
+            placeholder={placeholder}
+            width={'100%'}
+            state={'DISABLED'}
+          />
+        </>
+      ) : (
+        <>
+          <DropDownHeader
+            size={size}
+            type={type}
+            label={
+              selected === -1
+                ? placeholder ?? contents[0].label
+                : contents[selected].label
+            }
+            isSelected={selected !== -1}
+            isOpened={isOpened}
+            onClick={onClick}
+          />
+          <DropDownContents
+            contents={contents}
+            selected={selected}
+            onClickUnit={onClickUnit}
+            isOpened={isOpened}
+          />
+        </>
+      )}
     </DropDownContainer>
   );
 };
