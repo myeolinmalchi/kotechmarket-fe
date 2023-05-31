@@ -1,18 +1,18 @@
 // TODO: 문서 편집기 추가
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import withPageLoadedEffect from '../../../hocs/withPageLoadedEffect';
+import withPageLoadedEffect from '../../../../hocs/withPageLoadedEffect';
 import {
   useMediaQueryContext,
   useStyleContext,
-} from '../../../contexts/AppContextProvider';
-import { ColorType } from '../../../types/Style';
-import Font from '../../../styles/Font';
-import { RadioButton, RadioField } from '../../../components/Radio';
-import { DefaultButton, TextButton } from '../../../components/Button';
-import { useCustomNavigate } from '../../../hooks/useCustomNavigate';
-import { TextArea, TextField } from '../../../components/TextFields';
-import { CheckBox, CheckBoxField } from '../../../components/CheckBox';
+} from '../../../../contexts/AppContextProvider';
+import { ColorType } from '../../../../types/Style';
+import Font from '../../../../styles/Font';
+import { RadioButton, RadioField } from '../../../../components/Radio';
+import { DefaultButton, TextButton } from '../../../../components/Button';
+import { useCustomNavigate } from '../../../../hooks/useCustomNavigate';
+import { TextArea, TextField } from '../../../../components/TextFields';
+import { CheckBox, CheckBoxField } from '../../../../components/CheckBox';
 import {
   ButtonWrapper,
   ColumnWidth,
@@ -21,16 +21,16 @@ import {
   TableWrapper,
   Td,
   Th,
-} from '../../../components/Table';
+} from '../../../../components/Table';
 import {
   SearchContainer,
   SmallTitle,
   SubTitle,
-} from '../../../components/Search';
-import { DropDown } from '../../../components/DropDown';
-import { useDropDown } from '../../../hooks/useDropDown';
-import { Pagination } from '../../../components/Pagination';
-import Avatar from '../../../components/Avatar';
+} from '../../../../components/Search';
+import { DropDown } from '../../../../components/DropDown';
+import { useDropDown } from '../../../../hooks/useDropDown';
+import { Pagination } from '../../../../components/Pagination';
+import Avatar from '../../../../components/Avatar';
 
 const Container = styled.div<{ Color: ColorType }>`
   display: flex;
@@ -114,22 +114,16 @@ const GenerationControllerContainer = styled.div<{ Color: ColorType }>`
 const GenerationController = ({
   title,
   mode = 'DEFAULT',
-  optional = false,
 }: {
   title: string;
   mode?: 'DEFAULT' | 'REGENERATION' | 'CORRECTION' | 'NONE';
-  optional?: boolean;
 }) => {
   const { Color } = useStyleContext();
   return (
     <GenerationControllerContainer Color={Color}>
       <GenerationControllerTitle style={{ ...Font.body.body1 }}>
         {title}
-        {!optional && (
-          <>
-            <span style={{ color: Color.text.red }}> *</span>
-          </>
-        )}
+        <span style={{ color: Color.text.red }}> *</span>
       </GenerationControllerTitle>
       <GenerationControllerButtonArea>
         {mode !== 'NONE' && (
@@ -172,37 +166,6 @@ const GenerationController = ({
         )}
       </GenerationControllerButtonArea>
     </GenerationControllerContainer>
-  );
-};
-
-const FormTitle = ({
-  label,
-  optional = false,
-}: {
-  label: string;
-  optional?: boolean;
-}) => {
-  const { Color } = useStyleContext();
-  return (
-    <>
-      <Spacer height={24} />
-      <span
-        style={{
-          ...Font.body.body1,
-          color: Color.text.secondary,
-          width: '100%',
-          textAlign: 'start',
-        }}
-      >
-        {label}
-        {!optional && (
-          <>
-            <span style={{ color: Color.text.red }}>*</span>
-          </>
-        )}
-      </span>
-      <Spacer height={16} />
-    </>
   );
 };
 
@@ -294,97 +257,35 @@ const ThumbnailUploader = ({
 };
 
 type ReactState<T> = [T, React.Dispatch<React.SetStateAction<T>>];
-type PageType =
-  | 'DEFAULT'
-  | 'SEARCH_TECH'
-  | 'SEARCH_REPORTER'
-  | 'SEARCH_RELATION_TECH';
 
 type GenerationFormType = {
-  /* -----------기술 상세 정보----------- */
-  $orgName: ReactState<string>;
-  $techName: ReactState<string>;
-  $appNumber: ReactState<string>; // 출원번호
-  $regNumber: ReactState<string>; // 등록번호
-  // 권리구분
-  // 권리기간
-  $docNumber: ReactState<string>; // 문서번호
-  $journal: ReactState<string>; // 저널
-  $reference: ReactState<string>; // 출처
-  $leadResearcher: ReactState<string>; // 대표 연구자
-  $coResearcher: ReactState<string | undefined>; // 공동 연구자
+  $title: ReactState<string>;
+  $subtitle: ReactState<string>;
   $thumbnail: ReactState<FileType | undefined>;
+  $content: ReactState<string>;
   $keywords: ReactState<string[]>;
-  /* -----------기술 상세 정보----------- */
-
-  /* ------------기술 정보--------------- */
-  $title: ReactState<string>; // 기술 제목
-  $techField: ReactState<string>; // 기술 분야
-  $categories: ReactState<number[]>; // 카테고리
-  /* ------------기술 정보--------------- */
-
-  /* ------------기술 소개--------------- */
-  $introTitle: ReactState<string>; // 기술 소개 제목
-  $introContent: ReactState<string>; // 기술 소개 내용
-  $introThumbnail: ReactState<FileType | undefined>; // 기술 소개 썸네일
-  $introThumbnailDescription: ReactState<string>; // 기술 소개 썸네일 설명
-  /* ------------기술 소개--------------- */
-
-  /* ------------유튜브 영상--------------- */
-  $youtubeURL: ReactState<string>;
-  /* ------------유튜브 영상--------------- */
-
-  /* ------------기술 완성도(TRL)--------------- */
-  $TRL: ReactState<TRLValue | undefined>;
-  /* ------------기술 완성도(TRL)--------------- */
-
-  /* ------------연관 기술 선택--------------- */
-  $relationPapers: ReactState<EssentialPaperType[]>;
-  /* ------------연관 기술 선택--------------- */
-
-  /* ------------매도/수 절차--------------- */
-
-  /* ------------매도/수 절차--------------- */
-
-  $isRelationPaperSearch: ReactState<boolean>;
+  $reporterInfo: ReactState<string>;
+  $categories: ReactState<number[]>;
+  $selectedReporter: ReactState<ReporterType | undefined>;
 };
 
-type TRLValue = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-
 const GenerationFormArea = ({
-  $orgName: [orgName, setOrgName],
-  $techName: [techName, setTechName],
-  $appNumber: [appNumber, setAppNumber],
-  $regNumber: [regNumber, setRegNumber],
-  $docNumber: [docNumber, setDocNumber],
-  $journal: [journal, setJournal],
-  $reference: [reference, setReference],
-  $leadResearcher: [leadResearcher, setLeadResearcher],
-  $coResearcher: [coResearcher, setCoResearcher],
-  $thumbnail: [thumbnail, setThumbnail],
-  $keywords: [keywords, setKeywords],
   $title: [title, setTitle],
-  $techField: [techField, setTechField],
+  $subtitle: [subtitle, setSubtitle],
+  $thumbnail: [thumbnail, setThumbnail],
+  $content: [content, setContent],
+  $keywords: [keywords, setKeywords],
+  $reporterInfo: [reporterInfo, setReporterInfo],
   $categories: [categories, setCategories],
-  $introTitle: [introTitle, setIntroTitle],
-  $introContent: [introContent, setIntroContent],
-  $introThumbnail: [introThumbnail, setIntroThumbnail],
-  $introThumbnailDescription: [
-    introThumbnailDescription,
-    setIntroThumbnailDescription,
-  ],
-  $youtubeURL: [youtubeURL, setYoutubeURL],
-  $TRL: [TRL, setTRL],
-  $relationPapers: [relationPapers, setRelationPapers],
+  $selectedReporter: [selectedReporter, setSelectedReporter],
   generated,
   auto,
   $pageMode: [, setPageMode],
   $pageVisible: [pageVisible, setPageVisible],
-  $isRelationPaperSearch: [, setIsRelationPaperSearch],
 }: GenerationFormType & {
   generated: boolean;
   auto: boolean;
-  $pageMode: ReactState<PageType>;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
   $pageVisible: ReactState<boolean>;
 }) => {
   const { Color } = useStyleContext();
@@ -393,13 +294,6 @@ const GenerationFormArea = ({
   React.useEffect(() => {
     setVisible(generated);
   }, [generated]);
-
-  const rightDivStates = useDropDown();
-  const TRLStates = useDropDown();
-
-  React.useEffect(() => {
-    setTRL(TRLStates.selected as TRLValue);
-  }, [TRLStates.selected]);
 
   return (
     <div
@@ -418,157 +312,7 @@ const GenerationFormArea = ({
           color: Color.text.secondary,
         }}
       >
-        기술 상세 정보
-      </span>
-      <FormTitle label={'기관명'} optional={false} />
-      <TextField
-        size={'L'}
-        value={orgName}
-        setValue={setOrgName}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-      <FormTitle label={'기술명'} optional={false} />
-      <TextField
-        size={'L'}
-        value={techName}
-        setValue={setTechName}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-      <FormTitle label={'출원번호'} optional={true} />
-      <TextField
-        size={'L'}
-        value={appNumber}
-        setValue={setAppNumber}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-      <FormTitle label={'등록번호'} optional={true} />
-      <TextField
-        size={'L'}
-        value={regNumber}
-        setValue={setRegNumber}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-      <FormTitle label={'권리구분'} optional={true} />
-      <DropDown
-        size={'L'}
-        contents={[]}
-        states={rightDivStates}
-        type={'DEFAULT'}
-        width={'100%'}
-        placeholder={'권리구분을 선택해주세요'}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-      <FormTitle label={'권리기간'} optional={true} />
-      {/* TODO: 입력 FORM 텍스트에서 기간으로 수정 필요 */}
-      <TextField
-        size={'L'}
-        value={''}
-        setValue={() => {}}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-
-      <FormTitle label={'문서번호'} optional={true} />
-      <TextField
-        size={'L'}
-        value={docNumber}
-        setValue={setDocNumber}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-
-      <FormTitle label={'저널'} optional={true} />
-      <TextField
-        size={'L'}
-        value={journal}
-        setValue={setJournal}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-
-      <FormTitle label={'출처'} optional={true} />
-      <TextField
-        size={'L'}
-        value={reference}
-        setValue={setReference}
-        state={auto ? 'DISABLED' : 'DEFAULT'}
-      />
-
-      <FormTitle label={'대표 연구자'} optional={false} />
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          gap: '8px',
-        }}
-      >
-        <TextField
-          size={'L'}
-          state={'DISABLED'}
-          width={'calc(85% - 4px)'}
-          placeholder={'대표 연구자 정보를 등록해주세요.'}
-        />
-        <DefaultButton
-          size={'M'}
-          height={'52px'}
-          width={'calc(15% - 4px)'}
-          onClick={() => {
-            setPageVisible(false);
-            setTimeout(() => {
-              setPageMode('SEARCH_REPORTER');
-            }, 200);
-          }}
-        >
-          등록하기
-        </DefaultButton>
-      </div>
-
-      <FormTitle label={'공동 연구자'} optional={true} />
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          gap: '8px',
-        }}
-      >
-        <TextField
-          size={'L'}
-          state={'DISABLED'}
-          width={'calc(85% - 4px)'}
-          placeholder={'공동 연구자 정보를 등록해주세요.'}
-        />
-        <DefaultButton
-          size={'M'}
-          height={'52px'}
-          width={'calc(15% - 4px)'}
-          onClick={() => {
-            setPageVisible(false);
-            setTimeout(() => {
-              setPageMode('SEARCH_REPORTER');
-            }, 200);
-          }}
-        >
-          등록하기
-        </DefaultButton>
-      </div>
-
-      <FormTitle label={'썸네일'} />
-      <ThumbnailUploader thumbnail={thumbnail} setThumbnail={setThumbnail} />
-
-      <Spacer height={24} />
-
-      <GenerationController
-        title={'중요키워드'}
-        mode={auto ? 'DEFAULT' : 'CORRECTION'}
-      />
-      <Spacer height={16} />
-      <TextField size={'L'} value={''} setValue={() => {}} />
-
-      <Spacer height={60} />
-      <span
-        style={{
-          ...Font.title.headline,
-          color: Color.text.secondary,
-        }}
-      >
-        기술 정보
+        뉴스 정보
       </span>
       <Spacer height={28} />
       <GenerationController
@@ -579,11 +323,18 @@ const GenerationFormArea = ({
       <TextField size={'L'} value={title} setValue={setTitle} />
       <Spacer height={24} />
       <GenerationController
-        title={'기술분야'}
+        title={'부제목'}
         mode={auto ? 'DEFAULT' : 'CORRECTION'}
       />
       <Spacer height={16} />
-      <TextField size={'L'} value={techField} setValue={setTechField} />
+      <TextField size={'L'} value={subtitle} setValue={setSubtitle} />
+      <Spacer height={24} />
+      <GenerationController
+        title={'썸네일'}
+        mode={auto ? 'REGENERATION' : 'NONE'}
+      />
+      <Spacer height={16} />
+      <ThumbnailUploader thumbnail={thumbnail} setThumbnail={setThumbnail} />
       <Spacer height={60} />
       <span
         style={{
@@ -591,46 +342,15 @@ const GenerationFormArea = ({
           color: Color.text.secondary,
         }}
       >
-        기술 소개
+        뉴스 내용
       </span>
       <Spacer height={28} />
       <GenerationController
-        title={'제목'}
-        optional={true}
+        title={'본문내용'}
         mode={auto ? 'DEFAULT' : 'CORRECTION'}
       />
       <Spacer height={16} />
-      <TextField size={'L'} value={introTitle} setValue={setIntroTitle} />
-      <Spacer height={24} />
-      <GenerationController
-        optional={true}
-        title={'내용'}
-        mode={auto ? 'DEFAULT' : 'CORRECTION'}
-      />
-      <Spacer height={16} />
-      <TextArea
-        size={'L'}
-        value={introContent}
-        setValue={setIntroContent}
-        height={104}
-      />
-      <Spacer height={24} />
-      <GenerationController
-        title={'이미지'}
-        mode={auto ? 'DEFAULT' : 'CORRECTION'}
-      />
-      <Spacer height={16} />
-      <ThumbnailUploader
-        thumbnail={introThumbnail}
-        setThumbnail={setIntroThumbnail}
-      />
-      <Spacer height={8} />
-      <TextField
-        placeholder={'이미지 설명을 적어주세요'}
-        value={introThumbnailDescription}
-        setValue={setIntroThumbnailDescription}
-      />
-
+      <TextField size={'L'} value={content} setValue={setContent} />
       <Spacer height={60} />
       <span
         style={{
@@ -638,162 +358,31 @@ const GenerationFormArea = ({
           color: Color.text.secondary,
         }}
       >
-        유튜브 영상
-      </span>
-      <FormTitle label="유튜브 URL" optional={true} />
-      <TextField
-        placeholder="동영상 링크를 입력해주세요"
-        value={youtubeURL}
-        setValue={setYoutubeURL}
-      />
-
-      <Spacer height={60} />
-      <span
-        style={{
-          ...Font.title.headline,
-          color: Color.text.secondary,
-        }}
-      >
-        기술 완성도
-      </span>
-      <FormTitle label={'기술완성도(TRL)'} optional={false} />
-      <DropDown
-        type={'DEFAULT'}
-        width={'100%'}
-        size={'L'}
-        placeholder={'기술완성도를 선택해주세요'}
-        states={TRLStates}
-        contents={[
-          {
-            label: '선택안함',
-            value: '0',
-          },
-          {
-            label: '1단계 기본원리파악',
-            value: '1',
-          },
-          {
-            label: '2단계 기본개념정립',
-            value: '1',
-          },
-          {
-            label: '3단계 기능 및 개념 검증',
-            value: '1',
-          },
-          {
-            label: '4단계 연구실 환경 테스트',
-            value: '1',
-          },
-          {
-            label: '5단계 유사환경 테스트',
-            value: '1',
-          },
-          {
-            label: '6단계 파일럿 현장 테스트',
-            value: '1',
-          },
-          {
-            label: '7단계 상용모델 개발',
-            value: '1',
-          },
-          {
-            label: '8단계 실제 환경 최종테스트',
-            value: '1',
-          },
-          {
-            label: '9단계 상용운영',
-            value: '1',
-          },
-        ]}
-      />
-      <Spacer height={60} />
-      <span
-        style={{
-          ...Font.title.headline,
-          color: Color.text.secondary,
-        }}
-      >
-        연관 기술 선택
+        뉴스 부가 정보
       </span>
       <Spacer height={28} />
-      <PaperItemContainer
-        Color={Color}
+
+      {/* 키워드 목록 바인딩 필요 */}
+      <GenerationController
+        title={'중요 키워드'}
+        mode={auto ? 'DEFAULT' : 'CORRECTION'}
+      />
+      <Spacer height={16} />
+      <TextField size={'L'} />
+      <Spacer height={24} />
+      {/* 키워드 목록 바인딩 필요 */}
+
+      <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: relationPapers.length === 0 ? 'center' : 'start',
-          flexDirection: 'column',
+          ...Font.body.body1,
+          color: Color.text.secondary,
           width: '100%',
-          height: '300px',
-          border: `1px solid ${Color.stroke.gray1}`,
-          borderRadius: '4px',
-          gap: '12px',
-          boxSizing: 'border-box',
-          padding: '24px 18px',
+          textAlign: 'start',
         }}
       >
-        {relationPapers.length === 0 && (
-          <>
-            <span style={{ ...Font.title.subhead3, color: Color.text.primary }}>
-              기술문서를 선택해주세요
-            </span>
-            <TextButton
-              style={'PRIMARY'}
-              type={'UNDERLINE'}
-              onClick={() => {
-                setVisible(false);
-                setIsRelationPaperSearch(true);
-                setTimeout(() => {
-                  setPageMode('SEARCH_TECH');
-                }, 200);
-              }}
-            >
-              기술 선택하기
-            </TextButton>
-          </>
-        )}
-        {relationPapers.length > 0 &&
-          relationPapers.map((props, idx) => (
-            <>
-              <PaperItem
-                {...{
-                  ...props,
-                  clearHandler: () => {
-                    setRelationPapers(
-                      relationPapers.filter((_, i) => i !== idx)
-                    );
-                  },
-                }}
-              />
-            </>
-          ))}
-      </PaperItemContainer>
-      <Spacer height={60} />
-      <span
-        style={{
-          ...Font.title.headline,
-          color: Color.text.secondary,
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        매도/수 절차
-        <DefaultButton size={'S'}>절차 불러오기</DefaultButton>
+        기자 정보 <span style={{ color: Color.text.red }}>*</span>
       </span>
-      <Spacer height={24} />
-      <DefaultButton size={'L'} style={'OUTLINE'} width={'100%'}>
-        추가하기
-      </DefaultButton>
-      <Spacer height={60} />
-      <span
-        style={{
-          ...Font.title.headline,
-          color: Color.text.secondary,
-        }}
-      >
-        문의처
-      </span>
-      <FormTitle label={'담당자 정보'} optional={false} />
+      <Spacer height={16} />
       <div
         style={{
           display: 'flex',
@@ -805,7 +394,7 @@ const GenerationFormArea = ({
           size={'L'}
           state={'DISABLED'}
           width={'calc(85% - 4px)'}
-          placeholder={'대표 연구자 정보를 등록해주세요.'}
+          placeholder={selectedReporter?.name ?? '기자 정보를 등록해주세요.'}
         />
         <DefaultButton
           size={'M'}
@@ -821,6 +410,36 @@ const GenerationFormArea = ({
           등록하기
         </DefaultButton>
       </div>
+      <Spacer height={60} />
+      <span
+        style={{
+          ...Font.title.headline,
+          color: Color.text.secondary,
+        }}
+      >
+        카테고리
+      </span>
+      <Spacer height={28} />
+      <span
+        style={{
+          ...Font.body.body1,
+          color: Color.text.secondary,
+          width: '100%',
+          textAlign: 'start',
+        }}
+      >
+        카테고리
+      </span>
+      <Spacer height={12} />
+      <CheckBoxField size={'S'} isRow={true} marginTop={0}>
+        <CheckBox size={'S'} onChange={() => {}} label={'특허'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'기술동향'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'기술정책'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'기술사업화'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'업무협약'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'연구성과'} />
+        <CheckBox size={'S'} onChange={() => {}} label={'행사'} />
+      </CheckBoxField>
       <Spacer height={24} />
     </div>
   );
@@ -834,7 +453,7 @@ type FileType = {
 type WriteTextSectionProps = {
   genFormValues: GenerationFormType;
   $generated: ReactState<boolean>;
-  $pageMode: ReactState<PageType>;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
 };
 
 const WriteTextSection = ({
@@ -863,7 +482,7 @@ const WriteTextSection = ({
     >
       <TextArea
         height={300}
-        placeholder={'소재를 간단히 작성해주세요.'}
+        placeholder={'뉴스 소재를 간단히 작성해주세요.'}
         value={newsSubjectValue}
         setValue={setNewsSubjectValue}
       />
@@ -918,12 +537,10 @@ type PaperType = EssentialPaperType & {
   year: number;
 };
 
-type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
-
 type ChoosePaperSectionType = {
   genFormValues: GenerationFormType;
   $generated: ReactState<boolean>;
-  $pageMode: ReactState<PageType>;
+  $pageMode: ReactState<'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'>;
   onClick: () => void;
   $selectedPapers: ReactState<EssentialPaperType[]>;
 };
@@ -1131,18 +748,14 @@ type TechType = {
   $visible: ReactState<boolean>;
   backHandler: () => void;
   submitHandler: () => void;
-  setSelectedPapers: SetState<EssentialPaperType[]>;
-  setRelationPapers: SetState<EssentialPaperType[]>;
-  $isRelationPaperSearch: ReactState<boolean>;
+  $selectedPapers: ReactState<EssentialPaperType[]>;
 };
 
 const SearchTech = ({
   $visible: [, setVisible],
   backHandler,
   submitHandler,
-  setSelectedPapers,
-  setRelationPapers,
-  $isRelationPaperSearch: [isRelationPaperSearch, setIsRelationPaperSearch],
+  $selectedPapers: [, setSelectedPapers],
 }: TechType) => {
   const { Color } = useStyleContext();
   const { isDesktop } = useMediaQueryContext();
@@ -1166,27 +779,15 @@ const SearchTech = ({
   }, [papers]);
 
   useEffect(() => {
-    if (isRelationPaperSearch) {
-      setRelationPapers(() =>
-        selectedPaperIndex
-          .reduce((acc, c, idx) => (c ? [...acc, idx] : acc), [] as number[])
-          .map((i) => ({
-            type: papers[i].type,
-            fileName: papers[i].fileName,
-            author: papers[i].author,
-          }))
-      );
-    } else {
-      setSelectedPapers(() =>
-        selectedPaperIndex
-          .reduce((acc, c, idx) => (c ? [...acc, idx] : acc), [] as number[])
-          .map((i) => ({
-            type: papers[i].type,
-            fileName: papers[i].fileName,
-            author: papers[i].author,
-          }))
-      );
-    }
+    setSelectedPapers(
+      selectedPaperIndex
+        .reduce((acc, c, idx) => (c ? [...acc, idx] : acc), [] as number[])
+        .map((i) => ({
+          type: papers[i].type,
+          fileName: papers[i].fileName,
+          author: papers[i].author,
+        }))
+    );
   }, [selectedPaperIndex]);
 
   useEffect(() => {
@@ -1570,7 +1171,7 @@ const SearchReporter = ({
   );
 };
 
-const transfer = () => {
+const news = () => {
   const { Color } = useStyleContext();
 
   const [selectedType, setSelectedType] = React.useState<
@@ -1583,97 +1184,57 @@ const transfer = () => {
 
   const { isDesktop } = useMediaQueryContext();
 
-  const [pageMode, setPageMode] = useState<PageType>('DEFAULT');
+  const [pageMode, setPageMode] = useState<
+    'DEFAULT' | 'SEARCH_TECH' | 'SEARCH_REPORTER'
+  >('DEFAULT');
 
   const [visible, setVisible] = useState(true);
 
-  const $orgName = React.useState<string>('');
-  const $techName = React.useState<string>('');
-  const $appNumber = React.useState<string>('');
-  const $regNumber = React.useState<string>('');
-  const $docNumber = React.useState<string>('');
-  const $journal = React.useState<string>('');
-  const $reference = React.useState<string>('');
-  const $leadResearcher = React.useState<string>('');
-  const $coResearcher = React.useState<string | undefined>();
-  const $thumbnail = React.useState<FileType | undefined>();
+  const $title = React.useState('');
+  const $subtitle = React.useState('');
+  const $thumbnail = React.useState<FileType>();
+  const $content = React.useState('');
   const $keywords = React.useState<string[]>([]);
-
-  const $title = React.useState<string>('');
-  const $techField = React.useState<string>('');
+  const $reporterInfo = React.useState('');
   const $categories = React.useState<number[]>([]);
 
-  const $introTitle = React.useState<string>('');
-  const $introContent = React.useState<string>('');
-  const $introThumbnail = React.useState<FileType | undefined>();
-  const $introThumbnailDescription = React.useState<string>('');
-
-  const $youtubeURL = React.useState<string>('');
-  const $TRL = React.useState<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>();
-  const $relationPapers = React.useState<EssentialPaperType[]>([]);
-
-  const $isRelationPaperSearch = React.useState<boolean>(false);
-
-  const [selectedPapers, setSelectedPapers] = useState<EssentialPaperType[]>(
-    []
-  );
+  const [selectedPapers, setSelectedPapers] = useState<
+    {
+      type: 0 | 1 | 2; // 특허 논문 보고서
+      fileName: string;
+      author: string;
+    }[]
+  >([]);
 
   const [selectedReporter, setSelectedReporter] = useState<ReporterType>();
 
   const genFormValues = React.useMemo(
     () => ({
-      $orgName,
-      $techName,
-      $appNumber,
-      $regNumber,
-      $docNumber,
-      $journal,
-      $reference,
-      $leadResearcher,
-      $coResearcher,
-      $thumbnail,
-      $keywords,
       $title,
-      $techField,
+      $subtitle,
+      $thumbnail,
+      $content,
+      $keywords,
+      $reporterInfo,
       $categories,
-      $introTitle,
-      $introContent,
-      $introThumbnail,
-      $introThumbnailDescription,
-      $youtubeURL,
-      $TRL,
-      $relationPapers,
-      $isRelationPaperSearch,
+      $selectedReporter: [selectedReporter, setSelectedReporter] as ReactState<
+        ReporterType | undefined
+      >,
     }),
     [
-      $orgName,
-      $techName,
-      $appNumber,
-      $regNumber,
-      $docNumber,
-      $journal,
-      $reference,
-      $leadResearcher,
-      $coResearcher,
-      $thumbnail,
-      $keywords,
-      $title,
-      $techField,
-      $categories,
-      $introTitle,
-      $introContent,
-      $introThumbnail,
-      $introThumbnailDescription,
-      $isRelationPaperSearch,
-      $TRL,
-      $youtubeURL,
-      $relationPapers,
+      $title[0],
+      $subtitle[0],
+      $thumbnail[0],
+      $content[0],
+      $keywords[0],
+      $reporterInfo[0],
+      $categories[0],
+      selectedReporter,
     ]
   );
 
   const [isValid, setIsValid] = React.useState(false);
 
-  /*
   React.useEffect(() => {
     const test =
       selectedReporter &&
@@ -1714,7 +1275,6 @@ const transfer = () => {
     $categories[1]([]);
     setSelectedReporter(undefined);
   }, [selectedType]);
-   */
 
   return (
     <div
@@ -1740,7 +1300,7 @@ const transfer = () => {
             등록하기
           </span>
           <span style={{ ...Font.title.display2, marginBottom: '36px' }}>
-            기술이전
+            뉴스
           </span>
           <span style={{ ...Font.title.headline, marginBottom: '28px' }}>
             유형선택
@@ -1875,7 +1435,6 @@ const transfer = () => {
           $visible={[visible, setVisible]}
           backHandler={() => {
             setVisible(false);
-            $isRelationPaperSearch[1](false);
             setTimeout(() => {
               setPageMode('DEFAULT');
               setVisible(true);
@@ -1884,7 +1443,6 @@ const transfer = () => {
           }}
           submitHandler={() => {
             setVisible(false);
-            $isRelationPaperSearch[1](false);
             setTimeout(() => {
               setPageMode('DEFAULT');
               setVisible(true);
@@ -1893,7 +1451,7 @@ const transfer = () => {
           $selectedReporter={[selectedReporter, setSelectedReporter]}
         />
       )}
-      {(pageMode === 'SEARCH_TECH' || pageMode === 'SEARCH_RELATION_TECH') && (
+      {pageMode === 'SEARCH_TECH' && (
         <SearchTech
           $visible={[visible, setVisible]}
           backHandler={() => {
@@ -1911,13 +1469,11 @@ const transfer = () => {
               setVisible(true);
             }, 200);
           }}
-          setSelectedPapers={setSelectedPapers}
-          setRelationPapers={$relationPapers[1]}
-          $isRelationPaperSearch={$isRelationPaperSearch}
+          $selectedPapers={[selectedPapers, setSelectedPapers]}
         />
       )}
     </div>
   );
 };
 
-export default withPageLoadedEffect(transfer);
+export default withPageLoadedEffect(news);

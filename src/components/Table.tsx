@@ -49,7 +49,6 @@ export const FlexWrapper = styled.div<{ gap?: string }>`
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
   gap: ${({ gap }) => gap ?? '8px'};
 `;
 
