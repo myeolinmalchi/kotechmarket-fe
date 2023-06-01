@@ -50,7 +50,7 @@ const news = () => {
 
   return (
     <>
-      <Title>뉴스관리</Title>
+      <Title>행사관리</Title>
       <SearchContainer>
         <DropDown
           width={isDesktop ? '120px' : '84px'}
@@ -62,27 +62,11 @@ const news = () => {
               value: '',
             },
             {
-              label: '특허',
+              label: '모집중',
               value: '',
             },
             {
-              label: '기술동향',
-              value: '',
-            },
-            {
-              label: '기술정책',
-              value: '',
-            },
-            {
-              label: '기술사업화',
-              value: '',
-            },
-            {
-              label: '업무협약',
-              value: '',
-            },
-            {
-              label: '업무성과',
+              label: '모집 마감',
               value: '',
             },
           ]}
@@ -111,16 +95,18 @@ const news = () => {
       <TableWrapper Color={Color}>
         <Table Color={Color}>
           <colgroup>
-            <ColumnWidth width="20%" />
+            <ColumnWidth width="15%" />
             <ColumnWidth width="50%" />
-            <ColumnWidth width="20%" />
+            <ColumnWidth width="15%" />
+            <ColumnWidth width="10%" />
             <ColumnWidth width="10%" />
           </colgroup>
           <thead>
             <tr style={{ ...Font.body.caption }}>
               <Th>등록시간</Th>
-              <Th>뉴스명</Th>
-              <Th>카테고리</Th>
+              <Th>행사명</Th>
+              <Th>참가인원</Th>
+              <Th>상태</Th>
               <Th>관리</Th>
             </tr>
           </thead>
@@ -129,7 +115,7 @@ const news = () => {
               <>
                 <tr>
                   <Td>2023-00-00 00시 00분</Td>
-                  <Td onClick={() => navigate('/news/detail?id=1')}>
+                  <Td onClick={() => navigate('/events/detail?id=1')}>
                     <FlexWrapper
                       style={{ padding: '12px 16px', boxSizing: 'border-box' }}
                     >
@@ -156,10 +142,20 @@ const news = () => {
                     style={{
                       padding: '0 16px',
                       boxSizing: 'border-box',
+                      fontWeight: '500',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => navigate('/contents/manage/events/subs')}
+                  >
+                    2명/50명
+                  </Td>
+                  <Td
+                    style={{
+                      color: Color.text.blue,
                     }}
                   >
-                    특허, 기술동향, 기술정책, 기술사업화, 업무협약, 연구성과,
-                    행사
+                    모집중
                   </Td>
                   <Td>
                     <FlexWrapper
@@ -171,7 +167,7 @@ const news = () => {
                         size={'SS'}
                         style={'SECONDARY'}
                         onClick={() =>
-                          navigate('/contents/manage/news/edit?id=1')
+                          navigate('/contents/manage/events/edit?id=1')
                         }
                       >
                         수정

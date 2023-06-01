@@ -50,7 +50,7 @@ const news = () => {
 
   return (
     <>
-      <Title>뉴스관리</Title>
+      <Title>기술이전 관리</Title>
       <SearchContainer>
         <DropDown
           width={isDesktop ? '120px' : '84px'}
@@ -119,7 +119,7 @@ const news = () => {
           <thead>
             <tr style={{ ...Font.body.caption }}>
               <Th>등록시간</Th>
-              <Th>뉴스명</Th>
+              <Th>기술이전 명</Th>
               <Th>카테고리</Th>
               <Th>관리</Th>
             </tr>
@@ -129,7 +129,7 @@ const news = () => {
               <>
                 <tr>
                   <Td>2023-00-00 00시 00분</Td>
-                  <Td onClick={() => navigate('/news/detail?id=1')}>
+                  <Td onClick={() => navigate('/transfer/detail?id=1')}>
                     <FlexWrapper
                       style={{ padding: '12px 16px', boxSizing: 'border-box' }}
                     >
@@ -158,8 +158,7 @@ const news = () => {
                       boxSizing: 'border-box',
                     }}
                   >
-                    특허, 기술동향, 기술정책, 기술사업화, 업무협약, 연구성과,
-                    행사
+                    바이오/의료, 화학, 식품
                   </Td>
                   <Td>
                     <FlexWrapper

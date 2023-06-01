@@ -1,4 +1,3 @@
-// TODO: SVG 파일 별도로 분리
 import React, { useEffect, useMemo, useState } from 'react';
 import { useContext } from 'react';
 import styled, { css } from 'styled-components';
@@ -208,7 +207,7 @@ type PagePrefix =
   | 'support'
   | 'sctown'
   | 'mypage'
-  | 'event'
+  | 'events'
   | 'news'
   | 'account'
   | 'contents'
@@ -443,7 +442,7 @@ export const SideNav = () => {
         />
         <PageItem
           isOpened={isOpened}
-          page={'event'}
+          page={'events'}
           label={'행사'}
           minUserType={0}
         />
@@ -528,6 +527,18 @@ export const SideNav = () => {
             {
               path: 'upload',
               label: '콘텐츠 등록',
+            },
+            {
+              path: 'manage/transfer',
+              label: '기술이전 관리',
+            },
+            {
+              path: 'manage/events',
+              label: '행사 관리',
+            },
+            {
+              path: 'manage/news',
+              label: '뉴스 관리',
             },
           ]}
         />

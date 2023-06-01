@@ -1243,7 +1243,7 @@ const event = () => {
             등록하기
           </span>
           <span style={{ ...Font.title.display2, marginBottom: '36px' }}>
-            뉴스
+            행사
           </span>
           <span style={{ ...Font.title.headline, marginBottom: '28px' }}>
             유형선택
