@@ -9,6 +9,7 @@ import { Title } from '../../components/account/Text';
 import { useCustomNavigate } from '../../hooks/useCustomNavigate';
 import withPageLoadedEffect from '../../hocs/withPageLoadedEffect';
 import { ModalContext } from '../../contexts/ModalProvider';
+import { API_URL } from '../../../config';
 
 const login = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -42,6 +43,25 @@ const login = () => {
 
   useEffect(() => {
     setButtonDisabled(email === '' || pw === '');
+  }, [email, pw]);
+
+  const login = React.useCallback(async () => {
+    const res = await fetch(`${API_URL}/public/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password: pw,
+      }),
+    });
+    // 로그인 성공
+    if (res.status === 200) {
+    }
+    // 로그인 실패
+    else {
+    }
   }, [email, pw]);
 
   const navigate = useCustomNavigate();

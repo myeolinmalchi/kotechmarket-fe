@@ -327,6 +327,7 @@ export const ContentCard = ({
   author,
   date,
   isMobile,
+  id,
 }: {
   src?: string;
   marked: boolean;
@@ -339,12 +340,17 @@ export const ContentCard = ({
   };
   date: Date;
   isMobile: boolean;
+  id?: number;
 }) => {
   const tagContainer = useHorizontalScroll();
   const navigate = useCustomNavigate();
 
   return (
-    <CardContainer width={width} isMobile={isMobile}>
+    <CardContainer
+      width={width}
+      isMobile={isMobile}
+      onClick={() => navigate(`/transfer/detail?id=${id}`)}
+    >
       <ImageBox src={src} marked={marked} />
       <TagContainer isMobile={isMobile} ref={tagContainer}>
         {tags.map((tag) => (
@@ -453,7 +459,7 @@ export const EventCard = ({
     <CardContainer
       width={width}
       isMobile={isMobile}
-      onClick={() => navigate(`/event/detail?id=${id}`)}
+      onClick={() => navigate(`/events/detail?id=${id}`)}
     >
       <ImageBox src={src} marked={marked} />
       <div

@@ -552,12 +552,20 @@ export const SideNav = () => {
           setAccOpened={setMyPageOpened}
           pages={[
             {
-              path: 'stored',
-              label: '보관함',
-            },
-            {
               path: 'history',
               label: '시청기록',
+            },
+            {
+              path: 'events',
+              label: '신청한 행사',
+            },
+            {
+              path: 'transfer',
+              label: '기술이전 문의내역',
+            },
+            {
+              path: 'stored',
+              label: '보관함',
             },
             {
               path: 'info',

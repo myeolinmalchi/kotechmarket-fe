@@ -275,6 +275,7 @@ const FindOrgModal = ({
 };
 
 type UserType = 'STANDARD' | 'ENTERPRISE';
+
 const join = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [userType, setUserType] = React.useState<
@@ -402,8 +403,10 @@ const join = () => {
    */
   const checkDuplicateEmail = useCallback(
     async (email: string): Promise<boolean> => {
+      const query =
+        encodeURIComponent('email') + '=' + encodeURIComponent(email);
       const res = await fetch(
-        `${API_URL}/public/api/v1/members/duplicate?email=${email}`
+        `${API_URL}/public/api/v1/members/duplicate?${query}`
       );
       const { isUnique }: { isUnique: boolean } = await res.json();
       return !isUnique;

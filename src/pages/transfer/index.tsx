@@ -154,6 +154,7 @@ const transfer = () => {
             }}
             date={new Date()}
             isMobile={!isDesktop}
+            id={1}
           />
         ))}
       </CardContainer>
